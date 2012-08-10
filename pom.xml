@@ -1,0 +1,11 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.zenika.dorm.cudf.binder</groupId>
+  <artifactId>cudf-binder</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>CUDF Binder</name>
+  <description>Gives binding behavior to and from cudf</description>
+</project>
