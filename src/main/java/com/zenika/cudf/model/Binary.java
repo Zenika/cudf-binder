@@ -1,8 +1,6 @@
 package com.zenika.cudf.model;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -63,7 +61,9 @@ public class Binary {
 
         Binary binary = (Binary) o;
 
+        if (installed != binary.installed) return false;
         if (!binaryId.equals(binary.binaryId)) return false;
+        if (type != null ? !type.equals(binary.type) : binary.type != null) return false;
 
         return true;
     }

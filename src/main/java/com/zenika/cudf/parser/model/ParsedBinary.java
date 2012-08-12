@@ -2,7 +2,6 @@ package com.zenika.cudf.parser.model;
 
 import com.zenika.cudf.model.BinaryId;
 
-import java.util.List;
 import java.util.Set;
 
 /**

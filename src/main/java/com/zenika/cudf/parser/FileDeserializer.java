@@ -1,23 +1,27 @@
 package com.zenika.cudf.parser;
 
-import com.zenika.cudf.model.Binary;
 import com.zenika.cudf.model.BinaryId;
-import com.zenika.cudf.model.CUDFDescriptor;
 import com.zenika.cudf.parser.model.CUDFParsedDescriptor;
 import com.zenika.cudf.parser.model.ParsedBinary;
 import com.zenika.cudf.parser.model.ParsedPreamble;
 import com.zenika.cudf.parser.model.ParsedRequest;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Antoine Rouaze <antoine.rouaze@zenika.com>
  */
-public class CUDFParser {
+public class FileDeserializer {
+
+    private static final Logger LOG = Logger.getLogger(FileDeserializer.class.getName());
 
     private static final String PREAMBLE_START_LINE = "preamble: ";
     private static final String UNIV_CHECKSUM_START_LINE = "univ-checksum: ";
@@ -39,44 +43,48 @@ public class CUDFParser {
 
     private static final String SEPARATOR = "%3a";
 
-    public CUDFDescriptor read(Reader reader) {
-        CUDFParsedDescriptor parsedDescriptor = parseCudf(reader);
+    private final File file;
 
-        Set<Binary> binaries = processParsedBinaries(parsedDescriptor);
-
-        CUDFDescriptor cudfDescriptor = new CUDFDescriptor();
-
-        return cudfDescriptor;
+    public FileDeserializer(File file) {
+        this.file = file;
     }
 
-    private Set<Binary> processParsedBinaries(CUDFParsedDescriptor parsedDescriptor) {
-        Set<Binary> binaries = new HashSet<Binary>();
-
-        return binaries;
-    }
-
-    private CUDFParsedDescriptor parseCudf(Reader reader) {
-        BufferedReader buffer = new BufferedReader(reader);
-
-        String currentLine;
-        ParsedPreamble preamble = null;
-        Set<ParsedBinary> packages = null;
-        ParsedRequest request = null;
-        while ((currentLine = buffer.readLine()) != null) {
-            packages = new HashSet<ParsedBinary>();
-            if (currentLine.startsWith(PREAMBLE_START_LINE)) {
-                preamble = parsePreamble(buffer);
-            } else if (currentLine.startsWith(PACKAGE_START_LINE)) {
-                packages.add(parsePackage(currentLine, buffer));
-            } else if (currentLine.startsWith(REQUEST_START_LINE)) {
-                request = parseRequest(buffer);
+    private CUDFParsedDescriptor parseCudf() throws ParsingException {
+        BufferedReader buffer = null;
+        try {
+            buffer = new BufferedReader(new FileReader(file));
+            String currentLine;
+            ParsedPreamble preamble = null;
+            Set<ParsedBinary> packages = null;
+            ParsedRequest request = null;
+            while ((currentLine = buffer.readLine()) != null) {
+                packages = new HashSet<ParsedBinary>();
+                if (currentLine.startsWith(PREAMBLE_START_LINE)) {
+                    preamble = parsePreamble(buffer);
+                } else if (currentLine.startsWith(PACKAGE_START_LINE)) {
+                    packages.add(parsePackage(currentLine, buffer));
+                } else if (currentLine.startsWith(REQUEST_START_LINE)) {
+                    request = parseRequest(buffer);
+                }
+            }
+            CUDFParsedDescriptor descriptor = new CUDFParsedDescriptor();
+            descriptor.setPreamble(preamble);
+            descriptor.setPackages(packages);
+            descriptor.setRequest(request);
+            return descriptor;
+        } catch (FileNotFoundException e) {
+            throw new ParsingException("Unable to find file to parsing", e);
+        } catch (IOException e) {
+            throw new ParsingException("An error was occur when trying to read the file", e);
+        } finally {
+            if (buffer != null) {
+                try {
+                    buffer.close();
+                } catch (IOException e) {
+                    LOG.log(Level.SEVERE, "Unable to close reader buffer", e);
+                }
             }
         }
-        CUDFParsedDescriptor descriptor = new CUDFParsedDescriptor();
-        descriptor.setPreamble(preamble);
-        descriptor.setPackages(packages);
-        descriptor.setRequest(request);
-        return descriptor;
     }
 
     private ParsedPreamble parsePreamble(BufferedReader buffer) throws IOException {
@@ -142,7 +150,7 @@ public class CUDFParser {
             if (currentLine.startsWith(INSTALL_START_LINE)) {
                 String installLine = currentLine.substring(INSTALL_START_LINE.length()).trim();
                 request.setInstall(parsePackageList(installLine));
-            } else if (currentLine.startsWith(UPDATE_START_LINE)){
+            } else if (currentLine.startsWith(UPDATE_START_LINE)) {
                 String updateLine = currentLine.substring(UPDATE_START_LINE.length()).trim();
                 request.setUpdate(parsePackageList(updateLine));
             } else if (currentLine.startsWith(REMOVE_START_LINE)) {
