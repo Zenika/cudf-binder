@@ -1,0 +1,22 @@
+preamble:
+property: number: string, recommends: vpkgformula = [true!], suggests: vpkglist = [],
+ type: string = [""]
+
+package: zenika%3ajar1
+number: 1.0
+version: 1
+type: jar
+depends: zenika%3ajar2 = 1, zenika%3ajar3 = 2
+
+package: zenika%3ajar2
+number: 1.0.0
+version: 1
+type: jar
+
+package: zenika%3ajar3
+number: 1.2-SNAPSHOT
+version: 2
+type: jar
+
+request:
+install: zenika%3ajar1 = 1

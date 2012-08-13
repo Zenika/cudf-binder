@@ -11,7 +11,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,7 +25,7 @@ public class FileDeserializer extends AbstractDeserializer {
 
     private static final Logger LOG = Logger.getLogger(FileDeserializer.class.getName());
 
-    private static final String PREAMBLE_START_LINE = "preamble: ";
+    private static final String PREAMBLE_START_LINE = "preamble:";
     private static final String UNIV_CHECKSUM_START_LINE = "univ-checksum: ";
     private static final String STATUS_CHECKSUM_START_LINE = "status-checksum: ";
     private static final String REQ_CHECKSUM_START_LINE = "req-checksum: ";
@@ -34,9 +36,9 @@ public class FileDeserializer extends AbstractDeserializer {
     private static final String TYPE_START_LINE = "type: ";
     private static final String VERSION_START_LINE = "version: ";
     private static final String INSTALLED_START_LINE = "installed: ";
-    private static final String DEPENDS_START_LINE = "depend: ";
+    private static final String DEPENDS_START_LINE = "depends: ";
 
-    private static final String REQUEST_START_LINE = "request: ";
+    private static final String REQUEST_START_LINE = "request:";
     private static final String INSTALL_START_LINE = "install: ";
     private static final String UPDATE_START_LINE = "update: ";
     private static final String REMOVE_START_LINE = "remove: ";
@@ -54,11 +56,12 @@ public class FileDeserializer extends AbstractDeserializer {
         try {
             buffer = new BufferedReader(new FileReader(file));
             String currentLine;
+
             ParsedPreamble preamble = null;
-            Set<ParsedBinary> packages = null;
+            Set<ParsedBinary> packages = new HashSet<ParsedBinary>();
             ParsedRequest request = null;
+
             while ((currentLine = buffer.readLine()) != null) {
-                packages = new HashSet<ParsedBinary>();
                 if (currentLine.startsWith(PREAMBLE_START_LINE)) {
                     preamble = parsePreamble(buffer);
                 } else if (currentLine.startsWith(PACKAGE_START_LINE)) {
@@ -90,13 +93,9 @@ public class FileDeserializer extends AbstractDeserializer {
     private ParsedPreamble parsePreamble(BufferedReader buffer) throws IOException {
         ParsedPreamble preamble = new ParsedPreamble();
         String currentLine;
-        while (!(currentLine = buffer.readLine()).equals("\n")) {
+        while (!(currentLine = buffer.readLine()).equals("")) {
             if (currentLine.startsWith(PROPERTY_START_LINE)) {
-                String propertiesLine = currentLine.substring(PROPERTY_START_LINE.length()).trim();
-                for (String property : propertiesLine.split(", ")) {
-                    String[] propertyTab = property.split(" = ");
-                    preamble.getProperties().put(propertyTab[0], propertyTab[1]);
-                }
+                preamble.setProperties(parsePreambleProperties(buffer, currentLine));
             } else if (currentLine.startsWith(UNIV_CHECKSUM_START_LINE)) {
                 preamble.setUnivChecksum(currentLine.substring(UNIV_CHECKSUM_START_LINE.length()).trim());
             } else if (currentLine.startsWith(STATUS_CHECKSUM_START_LINE)) {
@@ -110,13 +109,34 @@ public class FileDeserializer extends AbstractDeserializer {
         return preamble;
     }
 
+    private Map<String, String> parsePreambleProperties(BufferedReader buffer, String currentLine) throws IOException {
+        currentLine = currentLine.substring(PROPERTY_START_LINE.length()).trim();
+        Map<String, String> properties = new HashMap<String, String>();
+        boolean endOfLogicalLine;
+        do {
+            for (String property : currentLine.split(",")) {
+                String[] propertyTab = property.trim().split(":");
+                properties.put(propertyTab[0], propertyTab[1].trim());
+            }
+            endOfLogicalLine = isEndOfLogicalLine(currentLine);
+            if (!endOfLogicalLine) {
+                currentLine = buffer.readLine();
+            }
+        } while (!endOfLogicalLine);
+        return properties;
+    }
+
+    private boolean isEndOfLogicalLine(String currentLine) {
+        return !currentLine.endsWith(",");
+    }
+
     private ParsedBinary parsePackage(String currentLine, BufferedReader buffer) throws IOException {
         ParsedBinary binary = new ParsedBinary();
         String packageLine = currentLine.substring(PACKAGE_START_LINE.length()).trim();
         String[] packageTab = packageLine.split(SEPARATOR);
         String organisation = packageTab[0];
         String name = packageTab[1];
-        while (!(currentLine = buffer.readLine()).equals("\n")) {
+        while (!(currentLine = buffer.readLine()).equals("")) {
             if (currentLine.startsWith(VERSION_START_LINE)) {
                 String versionLine = currentLine.substring(VERSION_START_LINE.length()).trim();
                 int version = Integer.parseInt(versionLine);
@@ -146,7 +166,7 @@ public class FileDeserializer extends AbstractDeserializer {
         ParsedRequest request;
         String currentLine;
         request = new ParsedRequest();
-        while (!(currentLine = buffer.readLine()).equals("\n")) {
+        while ((currentLine = buffer.readLine()) != null && !currentLine.equals("")) {
             if (currentLine.startsWith(INSTALL_START_LINE)) {
                 String installLine = currentLine.substring(INSTALL_START_LINE.length()).trim();
                 request.setInstall(parsePackageList(installLine));

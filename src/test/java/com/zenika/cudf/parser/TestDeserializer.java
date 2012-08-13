@@ -10,8 +10,6 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -22,44 +20,38 @@ import static org.junit.Assert.assertTrue;
  */
 public class TestDeserializer {
 
-    private static final Logger LOG = Logger.getLogger(TestDeserializer.class.getName());
-
     @Test
-    public void testDeserializer() {
+    public void testDeserializer() throws Exception {
         AbstractDeserializer deserializer = new MockDeserializer();
-        try {
-            CUDFDescriptor descriptor = deserializer.deserialize();
-            Preamble actualPreamble = descriptor.getPreamble();
-            Preamble expectedPreamble = createExpectedPreamble();
-            assertEquals(expectedPreamble, actualPreamble);
+        CUDFDescriptor descriptor = deserializer.deserialize();
+        Preamble actualPreamble = descriptor.getPreamble();
+        Preamble expectedPreamble = createExpectedPreamble();
+        assertEquals(expectedPreamble, actualPreamble);
 
-            BinaryId binaryId1 = new BinaryId("jar1", "zenika", 1);
-            BinaryId binaryId2 = new BinaryId("jar2", "zenika", 1);
-            BinaryId binaryId3 = new BinaryId("jar3", "zenika", 2);
+        BinaryId binaryId1 = new BinaryId("jar1", "zenika", 1);
+        BinaryId binaryId2 = new BinaryId("jar2", "zenika", 1);
+        BinaryId binaryId3 = new BinaryId("jar3", "zenika", 2);
 
-            Binary binary1 = createExpectedBinary(binaryId1, "1.0", "jar");
-            Binary binary2 = createExpectedBinary(binaryId2, "1.0.0", "jar");
-            Binary binary3 = createExpectedBinary(binaryId3, "1.2-SNAPSHOT", "jar");
-            binary1.getDependencies().add(binary2);
-            binary1.getDependencies().add(binary3);
+        Binary binary1 = createExpectedBinary(binaryId1, "1.0", "jar");
+        Binary binary2 = createExpectedBinary(binaryId2, "1.0.0", "jar");
+        Binary binary3 = createExpectedBinary(binaryId3, "1.2-SNAPSHOT", "jar");
+        binary1.getDependencies().add(binary2);
+        binary1.getDependencies().add(binary3);
 
-            Set<Binary> binaries = descriptor.getPackages();
-            Binary actualBinary1 = findBinaryByBinaryId(binaryId1, binaries);
-            assertNotNull(actualBinary1);
-            assertTrue(actualBinary1.getDependencies().contains(binary2));
-            assertTrue(actualBinary1.getDependencies().contains(binary3));
+        Set<Binary> binaries = descriptor.getPackages();
+        Binary actualBinary1 = findBinaryByBinaryId(binaryId1, binaries);
+        assertNotNull(actualBinary1);
+        assertTrue(actualBinary1.getDependencies().contains(binary2));
+        assertTrue(actualBinary1.getDependencies().contains(binary3));
 
-            assertTrue(binaries.contains(binary2));
-            assertTrue(binaries.contains(binary3));
+        assertTrue(binaries.contains(binary2));
+        assertTrue(binaries.contains(binary3));
 
-            Request actualRequest = descriptor.getRequest();
-            Request expectedRequest = createExpectedRequest(binary1);
+        Request actualRequest = descriptor.getRequest();
+        Request expectedRequest = createExpectedRequest(binary1);
 
-            assertEquals(expectedRequest, actualRequest);
+        assertEquals(expectedRequest, actualRequest);
 
-        } catch (ParsingException e) {
-            LOG.log(Level.SEVERE, "Unable to parse with Mock Deserializer", e);
-        }
     }
 
     private Preamble createExpectedPreamble() {
