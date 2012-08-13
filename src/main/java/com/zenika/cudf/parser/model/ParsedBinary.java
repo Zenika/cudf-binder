@@ -2,6 +2,7 @@ package com.zenika.cudf.parser.model;
 
 import com.zenika.cudf.model.BinaryId;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -13,7 +14,7 @@ public class ParsedBinary {
     private String revision;
     private boolean installed;
     private String type;
-    private Set<BinaryId> dependencies;
+    private Set<BinaryId> dependencies = new HashSet<BinaryId>();
 
     public BinaryId getBinaryId() {
         return binaryId;

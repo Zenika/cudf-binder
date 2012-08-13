@@ -20,7 +20,7 @@ import java.util.Set;
  */
 public abstract class AbstractDeserializer {
 
-    public CUDFDescriptor deserialize() {
+    public CUDFDescriptor deserialize() throws ParsingException {
         CUDFParsedDescriptor parsedDescriptor = parseCudf();
         CUDFDescriptor cudfDescriptor = new CUDFDescriptor();
 
@@ -35,7 +35,7 @@ public abstract class AbstractDeserializer {
         return cudfDescriptor;
     }
 
-    protected abstract CUDFParsedDescriptor parseCudf();
+    protected abstract CUDFParsedDescriptor parseCudf() throws ParsingException;
 
     private Preamble processPreamble(CUDFParsedDescriptor parsedDescriptor) {
         ParsedPreamble parsedPreamble = parsedDescriptor.getPreamble();

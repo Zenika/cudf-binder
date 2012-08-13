@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 /**
  * @author Antoine Rouaze <antoine.rouaze@zenika.com>
  */
-public class FileDeserializer {
+public class FileDeserializer extends AbstractDeserializer {
 
     private static final Logger LOG = Logger.getLogger(FileDeserializer.class.getName());
 
@@ -49,7 +49,7 @@ public class FileDeserializer {
         this.file = file;
     }
 
-    private CUDFParsedDescriptor parseCudf() throws ParsingException {
+    public CUDFParsedDescriptor parseCudf() throws ParsingException {
         BufferedReader buffer = null;
         try {
             buffer = new BufferedReader(new FileReader(file));
