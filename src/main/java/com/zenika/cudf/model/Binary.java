@@ -72,4 +72,17 @@ public class Binary {
     public int hashCode() {
         return binaryId.hashCode();
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("Binary");
+        sb.append("{binaryId=").append(binaryId);
+        sb.append(", revision='").append(revision).append('\'');
+        sb.append(", installed=").append(installed);
+        sb.append(", type='").append(type).append('\'');
+        sb.append(", dependencies=").append(dependencies);
+        sb.append('}');
+        return sb.toString();
+    }
 }

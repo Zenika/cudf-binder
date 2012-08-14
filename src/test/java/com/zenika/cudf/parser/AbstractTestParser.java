@@ -2,8 +2,17 @@ package com.zenika.cudf.parser;
 
 import com.zenika.cudf.model.Binary;
 import com.zenika.cudf.model.BinaryId;
+import com.zenika.cudf.model.CUDFDescriptor;
+import com.zenika.cudf.model.Preamble;
+import com.zenika.cudf.model.Request;
+import com.zenika.cudf.parser.model.CUDFParsedDescriptor;
 import com.zenika.cudf.parser.model.ParsedBinary;
+import com.zenika.cudf.parser.model.ParsedPreamble;
+import com.zenika.cudf.parser.model.ParsedRequest;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -31,5 +40,114 @@ public abstract class AbstractTestParser {
             }
         }
         return null;
+    }
+
+    protected CUDFDescriptor createDescriptor() {
+        CUDFDescriptor descriptor = new CUDFDescriptor();
+
+        Preamble preamble = createPreamble();
+        Set<Binary> binaries = createBinaries(binaryId1, binaryId2, binaryId3);
+        Request request = createRequest(findBinaryByBinaryId(binaryId1, binaries));
+
+        descriptor.setPreamble(preamble);
+        descriptor.setPackages(binaries);
+        descriptor.setRequest(request);
+
+        return descriptor;
+    }
+
+    private Preamble createPreamble() {
+        Preamble preamble = new Preamble();
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put("key", "value");
+        preamble.setProperties(properties);
+        preamble.setReqChecksum("req");
+        preamble.setStatusChecksum("status");
+        preamble.setUnivChecksum("univ");
+        return preamble;
+    }
+
+    private Set<Binary> createBinaries(BinaryId binaryId1, BinaryId binaryId2, BinaryId binaryId3) {
+        Set<Binary> binaries = new HashSet<Binary>();
+        Binary binary1 = createBinary(binaryId1, "1.0", "jar", false);
+        Binary binary2 = createBinary(binaryId2, "1.0.0", "jar", false);
+        Binary binary3 = createBinary(binaryId3, "1.2-SNAPSHOT", "jar", true);
+
+        binary1.getDependencies().add(binary2);
+        binary1.getDependencies().add(binary3);
+
+        binaries.add(binary1);
+        binaries.add(binary2);
+        binaries.add(binary3);
+        return binaries;
+    }
+
+    private Binary createBinary(BinaryId binaryId, String revision, String type, boolean installed) {
+        Binary binary = new Binary(binaryId);
+        binary.setInstalled(installed);
+        binary.setRevision(revision);
+        binary.setType(type);
+        return binary;
+    }
+
+    private Request createRequest(Binary binary1) {
+        Request request = new Request();
+        request.getInstall().add(binary1);
+        return request;
+    }
+
+    protected CUDFParsedDescriptor createParsedDescriptor() {
+        CUDFParsedDescriptor parsedDescriptor = new CUDFParsedDescriptor();
+
+        ParsedPreamble parsedPreamble = createParsedPreamble();
+        Set<ParsedBinary> parsedBinaries = createParsedBinaries(binaryId1, binaryId2, binaryId3);
+        ParsedRequest request = createParsedRequest(binaryId1);
+
+        parsedDescriptor.setPreamble(parsedPreamble);
+        parsedDescriptor.setPackages(parsedBinaries);
+        parsedDescriptor.setRequest(request);
+
+        return parsedDescriptor;
+    }
+
+    private ParsedPreamble createParsedPreamble() {
+        ParsedPreamble parsedPreamble = new ParsedPreamble();
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put("key", "value");
+        parsedPreamble.setProperties(properties);
+        parsedPreamble.setReqChecksum("req");
+        parsedPreamble.setStatusChecksum("status");
+        parsedPreamble.setUnivChecksum("univ");
+        return parsedPreamble;
+    }
+
+    private Set<ParsedBinary> createParsedBinaries(BinaryId binaryId1, BinaryId binaryId2, BinaryId binaryId3) {
+        Set<ParsedBinary> parsedBinaries = new HashSet<ParsedBinary>();
+        ParsedBinary binary1 = createParsedBinary(binaryId1, "1.0", "jar", false);
+        binary1.getDependencies().add(binaryId2);
+        binary1.getDependencies().add(binaryId3);
+        parsedBinaries.add(binary1);
+
+        ParsedBinary binary2 = createParsedBinary(binaryId2, "1.0.0", "jar", false);
+        parsedBinaries.add(binary2);
+
+        ParsedBinary binary3 = createParsedBinary(binaryId3, "1.2-SNAPSHOT", "jar", true);
+        parsedBinaries.add(binary3);
+        return parsedBinaries;
+    }
+
+    private ParsedBinary createParsedBinary(BinaryId binaryId1, String revision, String type, boolean installed) {
+        ParsedBinary binary = new ParsedBinary();
+        binary.setBinaryId(binaryId1);
+        binary.setRevision(revision);
+        binary.setType(type);
+        binary.setInstalled(installed);
+        return binary;
+    }
+
+    private ParsedRequest createParsedRequest(BinaryId binaryId1) {
+        ParsedRequest request = new ParsedRequest();
+        request.getInstall().add(binaryId1);
+        return request;
     }
 }

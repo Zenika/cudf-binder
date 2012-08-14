@@ -1,19 +1,16 @@
 package com.zenika.cudf.parser;
 
 import com.zenika.cudf.model.Binary;
-import com.zenika.cudf.model.BinaryId;
 import com.zenika.cudf.model.CUDFDescriptor;
 import com.zenika.cudf.model.Preamble;
 import com.zenika.cudf.model.Request;
 import com.zenika.cudf.parser.mock.MockDeserializer;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Antoine Rouaze <antoine.rouaze@zenika.com>
@@ -22,65 +19,49 @@ public class TestDeserializer extends AbstractTestParser {
 
     @Test
     public void testDeserializer() throws Exception {
-        AbstractDeserializer deserializer = new MockDeserializer();
-        CUDFDescriptor descriptor = deserializer.deserialize();
+        AbstractDeserializer deserializer = new MockDeserializer(createParsedDescriptor());
+        CUDFDescriptor actualDescriptor = deserializer.deserialize();
+        CUDFDescriptor expectedDescriptor = createDescriptor();
 
-        assertNotNull(descriptor);
+        assertNotNull(actualDescriptor);
 
-        assertPreamble(descriptor);
-        assertBinaries(descriptor);
-        assertRequest(descriptor);
+        assertPreamble(expectedDescriptor.getPreamble(), actualDescriptor.getPreamble());
+        assertBinaries(expectedDescriptor.getPackages(), actualDescriptor.getPackages());
+        assertRequest(expectedDescriptor.getRequest(), actualDescriptor.getRequest());
     }
 
-    private void assertPreamble(CUDFDescriptor descriptor) {
-        Preamble actualPreamble = descriptor.getPreamble();
-        Preamble expectedPreamble = createExpectedPreamble();
-        assertEquals(expectedPreamble, actualPreamble);
+    private void assertPreamble(Preamble expectedPreamble, Preamble actualPreamble) {
+        assertEquals(expectedPreamble.getProperties(), actualPreamble.getProperties());
+        assertEquals(expectedPreamble.getReqChecksum(), actualPreamble.getReqChecksum());
+        assertEquals(expectedPreamble.getStatusChecksum(), actualPreamble.getStatusChecksum());
+        assertEquals(expectedPreamble.getUnivChecksum(), actualPreamble.getUnivChecksum());
     }
 
-    private void assertBinaries(CUDFDescriptor descriptor) {
-        Binary binary1 = createExpectedBinary(binaryId1, "1.0", "jar");
-        Binary binary2 = createExpectedBinary(binaryId2, "1.0.0", "jar");
-        Binary binary3 = createExpectedBinary(binaryId3, "1.2-SNAPSHOT", "jar");
-        binary1.getDependencies().add(binary2);
-        binary1.getDependencies().add(binary3);
+    private void assertBinaries(Set<Binary> expectedBinaries, Set<Binary> actualBinaries) {
+        Binary actualBinary1 = findBinaryByBinaryId(binaryId1, actualBinaries);
+        Binary actualBinary2 = findBinaryByBinaryId(binaryId2, actualBinaries);
+        Binary actualBinary3 = findBinaryByBinaryId(binaryId3, actualBinaries);
 
-        Binary actualBinary1 = findBinaryByBinaryId(binaryId1, descriptor.getPackages());
+        Binary expectedBinary1 = findBinaryByBinaryId(binaryId1, expectedBinaries);
+        Binary expectedBinary2 = findBinaryByBinaryId(binaryId2, expectedBinaries);
+        Binary expectedBinary3 = findBinaryByBinaryId(binaryId3, expectedBinaries);
 
-        assertNotNull(actualBinary1);
-        assertTrue(actualBinary1.getDependencies().contains(binary2));
-        assertTrue(actualBinary1.getDependencies().contains(binary3));
-        assertTrue(descriptor.getPackages().contains(binary2));
-        assertTrue(descriptor.getPackages().contains(binary3));
+        assertBinary(expectedBinary1, actualBinary1);
+        assertBinary(expectedBinary2, actualBinary2);
+        assertBinary(expectedBinary3, actualBinary3);
     }
 
-    private void assertRequest(CUDFDescriptor descriptor) {
-        Request actualRequest = descriptor.getRequest();
-        Request expectedRequest = createExpectedRequest(findBinaryByBinaryId(binaryId1, descriptor.getPackages()));
-        assertEquals(expectedRequest, actualRequest);
+    private void assertBinary(Binary expectedBinary, Binary actualBinary) {
+        assertEquals(expectedBinary.getBinaryId(), actualBinary.getBinaryId());
+        assertEquals(expectedBinary.getRevision(), actualBinary.getRevision());
+        assertEquals(expectedBinary.getType(), actualBinary.getType());
+        assertEquals(expectedBinary.isInstalled(), actualBinary.isInstalled());
+        assertEquals(expectedBinary.getDependencies(), actualBinary.getDependencies());
     }
 
-    private Preamble createExpectedPreamble() {
-        Preamble expectedPreamble = new Preamble();
-        Map<String, String> properties = new HashMap<String, String>();
-        properties.put("key", "value");
-        expectedPreamble.setProperties(properties);
-        expectedPreamble.setReqChecksum("req");
-        expectedPreamble.setStatusChecksum("status");
-        expectedPreamble.setUnivChecksum("univ");
-        return expectedPreamble;
-    }
-
-    private Binary createExpectedBinary(BinaryId binaryId, String revision, String type) {
-        Binary binary = new Binary(binaryId);
-        binary.setRevision(revision);
-        binary.setType(type);
-        return binary;
-    }
-
-    private Request createExpectedRequest(Binary binary1) {
-        Request expectedRequest = new Request();
-        expectedRequest.getInstall().add(binary1);
-        return expectedRequest;
+    private void assertRequest(Request expectedRequest, Request actualRequest) {
+        assertEquals(expectedRequest.getInstall(), actualRequest.getInstall());
+        assertEquals(expectedRequest.getRemove(), actualRequest.getRemove());
+        assertEquals(expectedRequest.getUpdate(), actualRequest.getUpdate());
     }
 }
