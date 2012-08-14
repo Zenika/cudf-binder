@@ -63,4 +63,21 @@ public class ParsedBinary {
     public void setType(String type) {
         this.type = type;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ParsedBinary binary = (ParsedBinary) o;
+
+        if (binaryId != null ? !binaryId.equals(binary.binaryId) : binary.binaryId != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return binaryId != null ? binaryId.hashCode() : 0;
+    }
 }
