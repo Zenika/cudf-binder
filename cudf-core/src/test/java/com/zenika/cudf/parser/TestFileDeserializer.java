@@ -24,7 +24,7 @@ public class TestFileDeserializer {
 
     @Test
     public void testFileDeserializer() throws Exception {
-        FileDeserializer fileDeserializer = new FileDeserializer(new File("src/test/resource/com/zenika/cudf/resource/test.cudf"));
+        FileDeserializer fileDeserializer = new FileDeserializer(new File("src/test/resource/com/zenika/com.zenika.cudf/resource/test.com.zenika.cudf"));
         CUDFParsedDescriptor parsedDescriptor = fileDeserializer.parseCudf();
 
         ParsedPreamble expectedParsedPreamble = parsedDescriptor.getPreamble();

@@ -25,7 +25,7 @@ public class TestFileSerializer extends AbstractTestParser {
 
     @Before
     public void setUp() {
-        outputFile = new File("target/tmp-cudf-output.cudf");
+        outputFile = new File("target/tmp-com.zenika.cudf-output.com.zenika.cudf");
     }
 
     @Test
@@ -34,7 +34,7 @@ public class TestFileSerializer extends AbstractTestParser {
         CUDFParsedDescriptor parsedDescriptor = createParsedDescriptor();
         serializer.parseCUDF(parsedDescriptor);
         String actualGeneration = readFile(outputFile);
-        String expectedGeneration = readFile(new File("src/test/resource/com/zenika/cudf/resource/expected-generation.cudf"));
+        String expectedGeneration = readFile(new File("src/test/resource/com/zenika/com.zenika.cudf/resource/expected-generation.com.zenika.cudf"));
         assertEquals(expectedGeneration, actualGeneration);
     }
 

@@ -4,11 +4,14 @@
     <groupId>com.zenika.dorm.cudf.binder</groupId>
     <artifactId>cudf-binder</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>cudf-core</module>
+    </modules>
 
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <name>CUDF Binder</name>
-    <description>Gives binding behavior to and from cudf</description>
+    <description>Gives binding behavior to and from com.zenika.cudf</description>
 
     <dependencies>
         <dependency>

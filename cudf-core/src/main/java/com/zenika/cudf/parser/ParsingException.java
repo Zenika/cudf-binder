@@ -1,7 +1,5 @@
 package com.zenika.cudf.parser;
 
-import java.io.FileNotFoundException;
-
 /**
  * @author Adrien Lecharpentier <adrien.lecharpentier@zenika.com>
  */
