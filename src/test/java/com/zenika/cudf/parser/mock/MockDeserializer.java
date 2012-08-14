@@ -22,23 +22,22 @@ public class MockDeserializer extends AbstractDeserializer {
     protected CUDFParsedDescriptor parseCudf() throws ParsingException {
         CUDFParsedDescriptor parsedDescriptor = new CUDFParsedDescriptor();
 
-        ParsedPreamble parsedPreamble = createPreamble();
-        parsedDescriptor.setPreamble(parsedPreamble);
-
         BinaryId binaryId1 = new BinaryId("jar1", "zenika", 1);
         BinaryId binaryId2 = new BinaryId("jar2", "zenika", 1);
         BinaryId binaryId3 = new BinaryId("jar3", "zenika", 2);
 
-        Set<ParsedBinary> parsedBinaries = createPackages(binaryId1, binaryId2, binaryId3);
-        parsedDescriptor.setPackages(parsedBinaries);
+        ParsedPreamble parsedPreamble = createParsedPreamble();
+        Set<ParsedBinary> parsedBinaries = createParsedBinaries(binaryId1, binaryId2, binaryId3);
+        ParsedRequest request = createParsedRequest(binaryId1);
 
-        ParsedRequest request = createRequest(binaryId1);
+        parsedDescriptor.setPreamble(parsedPreamble);
+        parsedDescriptor.setPackages(parsedBinaries);
         parsedDescriptor.setRequest(request);
 
         return parsedDescriptor;
     }
 
-    private ParsedPreamble createPreamble() {
+    private ParsedPreamble createParsedPreamble() {
         ParsedPreamble parsedPreamble = new ParsedPreamble();
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("key", "value");
@@ -49,22 +48,22 @@ public class MockDeserializer extends AbstractDeserializer {
         return parsedPreamble;
     }
 
-    private Set<ParsedBinary> createPackages(BinaryId binaryId1, BinaryId binaryId2, BinaryId binaryId3) {
+    private Set<ParsedBinary> createParsedBinaries(BinaryId binaryId1, BinaryId binaryId2, BinaryId binaryId3) {
         Set<ParsedBinary> parsedBinaries = new HashSet<ParsedBinary>();
-        ParsedBinary binary1 = createPackage(binaryId1, "1.0", "jar");
+        ParsedBinary binary1 = createParsedBinary(binaryId1, "1.0", "jar");
         binary1.getDependencies().add(binaryId2);
         binary1.getDependencies().add(binaryId3);
         parsedBinaries.add(binary1);
 
-        ParsedBinary binary2 = createPackage(binaryId2, "1.0.0", "jar");
+        ParsedBinary binary2 = createParsedBinary(binaryId2, "1.0.0", "jar");
         parsedBinaries.add(binary2);
 
-        ParsedBinary binary3 = createPackage(binaryId3, "1.2-SNAPSHOT", "jar");
+        ParsedBinary binary3 = createParsedBinary(binaryId3, "1.2-SNAPSHOT", "jar");
         parsedBinaries.add(binary3);
         return parsedBinaries;
     }
 
-    private ParsedBinary createPackage(BinaryId binaryId1, String revision, String type) {
+    private ParsedBinary createParsedBinary(BinaryId binaryId1, String revision, String type) {
         ParsedBinary binary = new ParsedBinary();
         binary.setBinaryId(binaryId1);
         binary.setRevision(revision);
@@ -72,11 +71,9 @@ public class MockDeserializer extends AbstractDeserializer {
         return binary;
     }
 
-    private ParsedRequest createRequest(BinaryId binaryId1) {
+    private ParsedRequest createParsedRequest(BinaryId binaryId1) {
         ParsedRequest request = new ParsedRequest();
-        Set<BinaryId> install = new HashSet<BinaryId>();
-        install.add(binaryId1);
-        request.setInstall(install);
+        request.getInstall().add(binaryId1);
         return request;
     }
 }

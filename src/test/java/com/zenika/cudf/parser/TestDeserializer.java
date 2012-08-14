@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -19,40 +18,46 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Antoine Rouaze <antoine.rouaze@zenika.com>
  */
-public class TestDeserializer {
+public class TestDeserializer extends AbstractTestParser {
 
     @Test
     public void testDeserializer() throws Exception {
         AbstractDeserializer deserializer = new MockDeserializer();
         CUDFDescriptor descriptor = deserializer.deserialize();
+
+        assertNotNull(descriptor);
+
+        assertPreamble(descriptor);
+        assertBinaries(descriptor);
+        assertRequest(descriptor);
+    }
+
+    private void assertPreamble(CUDFDescriptor descriptor) {
         Preamble actualPreamble = descriptor.getPreamble();
         Preamble expectedPreamble = createExpectedPreamble();
         assertEquals(expectedPreamble, actualPreamble);
+    }
 
-        BinaryId binaryId1 = new BinaryId("jar1", "zenika", 1);
-        BinaryId binaryId2 = new BinaryId("jar2", "zenika", 1);
-        BinaryId binaryId3 = new BinaryId("jar3", "zenika", 2);
-
+    private void assertBinaries(CUDFDescriptor descriptor) {
         Binary binary1 = createExpectedBinary(binaryId1, "1.0", "jar");
         Binary binary2 = createExpectedBinary(binaryId2, "1.0.0", "jar");
         Binary binary3 = createExpectedBinary(binaryId3, "1.2-SNAPSHOT", "jar");
         binary1.getDependencies().add(binary2);
         binary1.getDependencies().add(binary3);
 
-        Set<Binary> binaries = descriptor.getPackages();
-        Binary actualBinary1 = findBinaryByBinaryId(binaryId1, binaries);
+        Binary actualBinary1 = findBinaryByBinaryId(binaryId1, descriptor.getPackages());
+
         assertNotNull(actualBinary1);
         assertTrue(actualBinary1.getDependencies().contains(binary2));
         assertTrue(actualBinary1.getDependencies().contains(binary3));
+        assertTrue(descriptor.getPackages().contains(binary2));
+        assertTrue(descriptor.getPackages().contains(binary3));
+    }
 
-        assertTrue(binaries.contains(binary2));
-        assertTrue(binaries.contains(binary3));
-
+    private void assertRequest(CUDFDescriptor descriptor) {
         Request actualRequest = descriptor.getRequest();
-        Request expectedRequest = createExpectedRequest(binary1);
-
+        Request expectedRequest = createExpectedRequest(findBinaryByBinaryId(binaryId1, descriptor.getPackages()));
         assertEquals(expectedRequest, actualRequest);
-
     }
 
     private Preamble createExpectedPreamble() {
@@ -71,16 +76,6 @@ public class TestDeserializer {
         binary.setRevision(revision);
         binary.setType(type);
         return binary;
-    }
-
-    private Binary findBinaryByBinaryId(BinaryId binaryId1, Set<Binary> binaries) {
-        Binary actualBinary1 = null;
-        for (Binary binary : binaries) {
-            if (binary.getBinaryId().equals(binaryId1)) {
-                actualBinary1 = binary;
-            }
-        }
-        return actualBinary1;
     }
 
     private Request createExpectedRequest(Binary binary1) {
