@@ -5,6 +5,7 @@ import com.zenika.cudf.model.BinaryId;
 import com.zenika.cudf.model.CUDFDescriptor;
 import com.zenika.cudf.model.Preamble;
 import com.zenika.cudf.model.Request;
+import com.zenika.cudf.parser.mock.MockDeserializer;
 import org.junit.Test;
 
 import java.util.HashMap;

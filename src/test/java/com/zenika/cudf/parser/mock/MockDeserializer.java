@@ -1,6 +1,8 @@
-package com.zenika.cudf.parser;
+package com.zenika.cudf.parser.mock;
 
 import com.zenika.cudf.model.BinaryId;
+import com.zenika.cudf.parser.AbstractDeserializer;
+import com.zenika.cudf.parser.ParsingException;
 import com.zenika.cudf.parser.model.CUDFParsedDescriptor;
 import com.zenika.cudf.parser.model.ParsedBinary;
 import com.zenika.cudf.parser.model.ParsedPreamble;

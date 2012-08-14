@@ -28,6 +28,17 @@ public class TestFileDeserializer {
         CUDFParsedDescriptor parsedDescriptor = fileDeserializer.parseCudf();
 
         ParsedPreamble expectedParsedPreamble = parsedDescriptor.getPreamble();
+        assertParsedPreamble(expectedParsedPreamble);
+
+        Set<ParsedBinary> expectedParsedBinaries = parsedDescriptor.getPackages();
+        assertParsedBinaries(expectedParsedBinaries);
+
+        ParsedRequest expectedParsedRequest = parsedDescriptor.getRequest();
+        assertParsedRequest(expectedParsedRequest);
+
+    }
+
+    private void assertParsedPreamble(ParsedPreamble expectedParsedPreamble) {
         Map<String, String> expectedProperties = new HashMap<String, String>();
         expectedProperties.put("number", "string");
         expectedProperties.put("recommends", "vpkgformula = [true!]");
@@ -37,10 +48,11 @@ public class TestFileDeserializer {
         assertNull(expectedParsedPreamble.getReqChecksum());
         assertNull(expectedParsedPreamble.getStatusChecksum());
         assertNull(expectedParsedPreamble.getUnivChecksum());
+    }
 
-        Set<ParsedBinary> expectedParsedBinaries = parsedDescriptor.getPackages();
-        assertEquals(3, expectedParsedBinaries.size());
+    private void assertParsedBinaries(Set<ParsedBinary> expectedParsedBinaries) {
         ParsedBinary expectedParsedBinary = null;
+        assertEquals(3, expectedParsedBinaries.size());
         for (ParsedBinary parsedBinary : expectedParsedBinaries) {
             if (parsedBinary.getBinaryId().equals(new BinaryId("jar1", "zenika", 1))) {
                 expectedParsedBinary = parsedBinary;
@@ -53,10 +65,10 @@ public class TestFileDeserializer {
         assertEquals(2, expectedParsedBinaryIds.size());
         assertTrue(expectedParsedBinaryIds.contains(new BinaryId("jar2", "zenika", 1)));
         assertTrue(expectedParsedBinaryIds.contains(new BinaryId("jar3", "zenika", 2)));
+    }
 
-        ParsedRequest expectedParsedRequest = parsedDescriptor.getRequest();
+    private void assertParsedRequest(ParsedRequest expectedParsedRequest) {
         assertEquals(1, expectedParsedRequest.getInstall().size());
         assertTrue(expectedParsedRequest.getInstall().contains(new BinaryId("jar1", "zenika", 1)));
-
     }
 }
