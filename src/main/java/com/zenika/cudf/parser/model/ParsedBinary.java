@@ -10,6 +10,14 @@ import java.util.Set;
  */
 public class ParsedBinary {
 
+    public static final String NUMBER_START_LINE = "number: ";
+    public static final String TYPE_START_LINE = "type: ";
+    public static final String VERSION_START_LINE = "version: ";
+    public static final String INSTALLED_START_LINE = "installed: ";
+    public static final String DEPENDS_START_LINE = "depends: ";
+
+    public static final String SEPARATOR = "%3a";
+
     private BinaryId binaryId;
     private String revision;
     private boolean installed;

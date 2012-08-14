@@ -10,9 +10,13 @@ import java.util.Set;
  */
 public class ParsedRequest {
 
+    public static final String INSTALL_START_LINE = "install: ";
+    public static final String UPDATE_START_LINE = "update: ";
+    public static final String REMOVE_START_LINE = "remove: ";
+
     private Set<BinaryId> install = new HashSet<BinaryId>();
-    private Set<BinaryId> update  = new HashSet<BinaryId>();
-    private Set<BinaryId> remove  = new HashSet<BinaryId>();
+    private Set<BinaryId> update = new HashSet<BinaryId>();
+    private Set<BinaryId> remove = new HashSet<BinaryId>();
 
     public Set<BinaryId> getInstall() {
         return install;

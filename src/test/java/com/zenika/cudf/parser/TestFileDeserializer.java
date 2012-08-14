@@ -42,7 +42,7 @@ public class TestFileDeserializer {
         assertEquals(3, expectedParsedBinaries.size());
         ParsedBinary expectedParsedBinary = null;
         for (ParsedBinary parsedBinary : expectedParsedBinaries) {
-            if (parsedBinary.getBinaryId().equals(new BinaryId("jar1", "zenika", 1))){
+            if (parsedBinary.getBinaryId().equals(new BinaryId("jar1", "zenika", 1))) {
                 expectedParsedBinary = parsedBinary;
             }
         }

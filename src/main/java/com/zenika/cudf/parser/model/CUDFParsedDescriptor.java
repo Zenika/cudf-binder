@@ -1,14 +1,16 @@
 package com.zenika.cudf.parser.model;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
  * @author Antoine Rouaze <antoine.rouaze@zenika.com>
  */
 public class CUDFParsedDescriptor {
+
+    public static final String PREAMBLE_START_LINE = "preamble:";
+    public static final String PACKAGE_START_LINE = "package: ";
+    public static final String REQUEST_START_LINE = "request:";
 
     private ParsedPreamble preamble;
     private ParsedRequest request;
