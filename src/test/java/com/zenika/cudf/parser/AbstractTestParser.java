@@ -11,7 +11,7 @@ import com.zenika.cudf.parser.model.ParsedPreamble;
 import com.zenika.cudf.parser.model.ParsedRequest;
 
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -68,7 +68,7 @@ public abstract class AbstractTestParser {
     }
 
     private Set<Binary> createBinaries(BinaryId binaryId1, BinaryId binaryId2, BinaryId binaryId3) {
-        Set<Binary> binaries = new HashSet<Binary>();
+        Set<Binary> binaries = new LinkedHashSet<Binary>();
         Binary binary1 = createBinary(binaryId1, "1.0", "jar", false);
         Binary binary2 = createBinary(binaryId2, "1.0.0", "jar", false);
         Binary binary3 = createBinary(binaryId3, "1.2-SNAPSHOT", "jar", true);
@@ -122,7 +122,7 @@ public abstract class AbstractTestParser {
     }
 
     private Set<ParsedBinary> createParsedBinaries(BinaryId binaryId1, BinaryId binaryId2, BinaryId binaryId3) {
-        Set<ParsedBinary> parsedBinaries = new HashSet<ParsedBinary>();
+        Set<ParsedBinary> parsedBinaries = new LinkedHashSet<ParsedBinary>();
         ParsedBinary binary1 = createParsedBinary(binaryId1, "1.0", "jar", false);
         binary1.getDependencies().add(binaryId2);
         binary1.getDependencies().add(binaryId3);

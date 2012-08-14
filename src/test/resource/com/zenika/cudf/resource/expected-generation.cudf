@@ -1,0 +1,25 @@
+preamble:
+property: key: value
+req-checksum: req
+status-checksum: status
+univ-checksum: univ
+
+package: zenika%3ajar1
+version: 1
+type: jar
+number: 1.0
+depends: zenika%3ajar3 = 2, zenika%3ajar2 = 1
+
+package: zenika%3ajar2
+version: 1
+type: jar
+number: 1.0.0
+
+package: zenika%3ajar3
+version: 2
+type: jar
+number: 1.2-SNAPSHOT
+installed: true
+
+request:
+install: zenika%3ajar1 = 1
