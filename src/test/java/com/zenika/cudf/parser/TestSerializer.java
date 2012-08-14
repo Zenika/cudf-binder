@@ -137,7 +137,7 @@ public class TestSerializer extends AbstractTestParser {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("key", "value");
         preamble.setProperties(properties);
-        preamble.setReqChecksum("reg");
+        preamble.setReqChecksum("req");
         preamble.setStatusChecksum("status");
         preamble.setUnivChecksum("univ");
         return preamble;

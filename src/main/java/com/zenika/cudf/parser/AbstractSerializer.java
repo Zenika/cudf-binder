@@ -50,8 +50,9 @@ public abstract class AbstractSerializer {
         for (Binary binary : binaries) {
             ParsedBinary parsedBinary = new ParsedBinary();
             parsedBinary.setBinaryId(binary.getBinaryId());
-            parsedBinary.setRevision(parsedBinary.getRevision());
-            parsedBinary.setType(parsedBinary.getType());
+            parsedBinary.setRevision(binary.getRevision());
+            parsedBinary.setType(binary.getType());
+            parsedBinary.setInstalled(binary.isInstalled());
             Set<BinaryId> binaryIds = new HashSet<BinaryId>();
             for (Binary dependency : binary.getDependencies()) {
                 binaryIds.add(dependency.getBinaryId());
