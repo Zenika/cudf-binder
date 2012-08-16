@@ -6,7 +6,8 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>cudf-core</module>
-        <module>cudf-ivy-adapter</module>
+        <module>cudf-adapter-ivy</module>
+        <module>cudf-adapter-archiva</module>
     </modules>
 
     <packaging>pom</packaging>

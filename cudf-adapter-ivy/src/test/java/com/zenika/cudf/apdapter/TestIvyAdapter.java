@@ -21,6 +21,7 @@ import static com.zenika.cudf.apdapter.TestIvyUtils.createDescriptor;
 import static com.zenika.cudf.apdapter.TestIvyUtils.createModuleDescriptors;
 import static com.zenika.cudf.apdapter.TestIvyUtils.findBinaryByBinaryId;
 import static com.zenika.cudf.apdapter.TestIvyUtils.findModuleDescriptorByModuleRevisionId;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -68,6 +69,7 @@ public class TestIvyAdapter {
         assertEquals(expectedModuleRevisionId.getOrganisation(), actualModuleRevisionId.getOrganisation());
         assertEquals(expectedModuleRevisionId.getName(), actualModuleRevisionId.getName());
         assertEquals(expectedModuleRevisionId.getRevision(), actualModuleRevisionId.getRevision());
+        assertArrayEquals(expectedModuleDescriptor.getDependencies(), actualModuleDescriptor.getDependencies());
     }
 
     @Test
