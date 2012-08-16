@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>cudf-binder</artifactId>
+        <groupId>com.zenika.dorm.cudf.binder</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cudf-adapter-archiva</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.zenika.dorm.cudf.binder</groupId>
+            <artifactId>cudf-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.archiva</groupId>
+            <artifactId>metadata-model</artifactId>
+            <version>1.4-M3-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>archiva.snapshots</id>
+            <name>Archiva VM Snapshots Repository</name>
+            <url>https://archiva-repository.apache.org/archiva/repository/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+</project>
