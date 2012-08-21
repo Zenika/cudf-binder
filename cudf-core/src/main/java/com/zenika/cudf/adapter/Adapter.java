@@ -5,9 +5,9 @@ import com.zenika.cudf.model.CUDFDescriptor;
 /**
  * @author Antoine Rouaze <antoine.rouaze@zenika.com>
  */
-public interface Adapter<T> {
+public interface Adapter<X, Y> {
 
-    T fromCUDF(CUDFDescriptor descriptor);
+    X fromCUDF(CUDFDescriptor descriptor);
 
-    CUDFDescriptor toCUDF(T descriptors);
+    CUDFDescriptor toCUDF(Y descriptors);
 }

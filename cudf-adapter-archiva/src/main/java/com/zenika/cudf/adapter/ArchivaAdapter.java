@@ -15,7 +15,7 @@ import java.util.Set;
 /**
  * @author Antoine Rouaze <antoine.rouaze@zenika.com>
  */
-public class ArchivaAdapter implements Adapter<Set<ProjectVersionMetadata>> {
+public class ArchivaAdapter implements Adapter<Set<ProjectVersionMetadata>, Set<ProjectVersionMetadata>> {
 
     @Override
     public Set<ProjectVersionMetadata> fromCUDF(CUDFDescriptor descriptor) {
