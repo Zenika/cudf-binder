@@ -71,4 +71,15 @@ public class Preamble {
         result = 31 * result + (reqChecksum != null ? reqChecksum.hashCode() : 0);
         return result;
     }
+
+    public static Preamble getDefaultPreamble() {
+        Preamble preamble = new Preamble();
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put("number", "string");
+        properties.put("recommends", "vpkgformula = [true!]");
+        properties.put("suggests", "vpkglist = []");
+        properties.put("url", "string = [\"\"]");
+        preamble.setProperties(properties);
+        return preamble;
+    }
 }
