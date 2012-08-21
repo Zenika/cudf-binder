@@ -5,10 +5,8 @@ import com.zenika.cudf.model.BinaryId;
 import com.zenika.cudf.model.CUDFDescriptor;
 import com.zenika.cudf.model.Preamble;
 import com.zenika.cudf.model.Request;
-import org.apache.ivy.core.module.descriptor.DefaultDependencyArtifactDescriptor;
 import org.apache.ivy.core.module.descriptor.DefaultDependencyDescriptor;
 import org.apache.ivy.core.module.descriptor.DefaultModuleDescriptor;
-import org.apache.ivy.core.module.descriptor.DependencyArtifactDescriptor;
 import org.apache.ivy.core.module.descriptor.DependencyDescriptor;
 import org.apache.ivy.core.module.descriptor.ModuleDescriptor;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
@@ -51,18 +49,44 @@ public class TestIvyUtils {
         return null;
     }
 
-    public static Set<ModuleDescriptor> createModuleDescriptors() {
+    public static Set<DependencyDescriptor> createDependencyDescriptor() {
+        DependencyDescriptor dependencyDescriptor1 = new DefaultDependencyDescriptor(MODULE_REVISION_ID_1, false);
         DependencyDescriptor dependencyDescriptor2 = new DefaultDependencyDescriptor(MODULE_REVISION_ID_2, false);
         DependencyDescriptor dependencyDescriptor3 = new DefaultDependencyDescriptor(MODULE_REVISION_ID_3, false);
-        DependencyArtifactDescriptor[] dependencyArtifactDescriptors = new DependencyArtifactDescriptor[]{
-                new DefaultDependencyArtifactDescriptor(dependencyDescriptor2, "jar2", "jar", "jar", null, null),
-                new DefaultDependencyArtifactDescriptor(dependencyDescriptor3, "jar3", "jar", "jar", null, null)};
+
+        Set<DependencyDescriptor> dependencyDescriptors = new HashSet<DependencyDescriptor>();
+        dependencyDescriptors.add(dependencyDescriptor1);
+        dependencyDescriptors.add(dependencyDescriptor2);
+        dependencyDescriptors.add(dependencyDescriptor3);
+
+        return dependencyDescriptors;
+    }
+
+    public static Set<ModuleDescriptor> createModuleDescriptors() {
         Set<ModuleDescriptor> moduleDescriptors = new HashSet<ModuleDescriptor>();
-        moduleDescriptors.add(DefaultModuleDescriptor.newDefaultInstance(MODULE_REVISION_ID_1,
-                dependencyArtifactDescriptors));
-        moduleDescriptors.add(DefaultModuleDescriptor.newDefaultInstance(MODULE_REVISION_ID_2, null));
-        moduleDescriptors.add(DefaultModuleDescriptor.newDefaultInstance(MODULE_REVISION_ID_3, null));
+
+        DependencyDescriptor dependencyDescriptor2 = new DefaultDependencyDescriptor(MODULE_REVISION_ID_2, false);
+        DependencyDescriptor dependencyDescriptor3 = new DefaultDependencyDescriptor(MODULE_REVISION_ID_3, false);
+
+        moduleDescriptors.add(createModuleDescriptor(MODULE_REVISION_ID_1, dependencyDescriptor2, dependencyDescriptor3));
+        moduleDescriptors.add(createModuleDescriptor(MODULE_REVISION_ID_2));
+        moduleDescriptors.add(createModuleDescriptor(MODULE_REVISION_ID_3));
+
         return moduleDescriptors;
+    }
+
+    private static DefaultModuleDescriptor createModuleDescriptor(ModuleRevisionId moduleRevisionId) {
+        return createModuleDescriptor(moduleRevisionId, new DependencyDescriptor[]{});
+    }
+
+    private static DefaultModuleDescriptor createModuleDescriptor(ModuleRevisionId moduleRevisionId, DependencyDescriptor... dependencyDescriptors) {
+        DefaultModuleDescriptor moduleDescriptor = new DefaultModuleDescriptor(null, null);
+        moduleDescriptor.setModuleRevisionId(moduleRevisionId);
+        moduleDescriptor.setResolvedModuleRevisionId(moduleRevisionId);
+        for (DependencyDescriptor dependencyDescriptor : dependencyDescriptors) {
+            moduleDescriptor.addDependency(dependencyDescriptor);
+        }
+        return moduleDescriptor;
     }
 
     public static CUDFDescriptor createDescriptor() {

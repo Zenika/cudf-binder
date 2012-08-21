@@ -5,6 +5,7 @@ import com.zenika.cudf.model.Binary;
 import com.zenika.cudf.model.CUDFDescriptor;
 import com.zenika.cudf.model.Preamble;
 import com.zenika.cudf.model.Request;
+import org.apache.ivy.core.module.descriptor.DependencyDescriptor;
 import org.apache.ivy.core.module.descriptor.ModuleDescriptor;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.junit.Test;
@@ -17,11 +18,11 @@ import static com.zenika.cudf.apdapter.TestIvyUtils.BINARY_ID_3;
 import static com.zenika.cudf.apdapter.TestIvyUtils.MODULE_REVISION_ID_1;
 import static com.zenika.cudf.apdapter.TestIvyUtils.MODULE_REVISION_ID_2;
 import static com.zenika.cudf.apdapter.TestIvyUtils.MODULE_REVISION_ID_3;
+import static com.zenika.cudf.apdapter.TestIvyUtils.createDependencyDescriptor;
 import static com.zenika.cudf.apdapter.TestIvyUtils.createDescriptor;
 import static com.zenika.cudf.apdapter.TestIvyUtils.createModuleDescriptors;
 import static com.zenika.cudf.apdapter.TestIvyUtils.findBinaryByBinaryId;
 import static com.zenika.cudf.apdapter.TestIvyUtils.findModuleDescriptorByModuleRevisionId;
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -69,15 +70,17 @@ public class TestIvyAdapter {
         assertEquals(expectedModuleRevisionId.getOrganisation(), actualModuleRevisionId.getOrganisation());
         assertEquals(expectedModuleRevisionId.getName(), actualModuleRevisionId.getName());
         assertEquals(expectedModuleRevisionId.getRevision(), actualModuleRevisionId.getRevision());
-        assertArrayEquals(expectedModuleDescriptor.getDependencies(), actualModuleDescriptor.getDependencies());
+        assertEquals(expectedModuleDescriptor.getDependencies().length, actualModuleDescriptor.getDependencies().length);
+
+        assertEquals(1, actualModuleDescriptor.getArtifacts("default").length);
     }
 
     @Test
     public void testToCUDF() {
-        Set<ModuleDescriptor> moduleDescriptors = createModuleDescriptors();
+        Set<DependencyDescriptor> dependencyDescriptors = createDependencyDescriptor();
         IvyAdapter ivyAdapter = new IvyAdapter();
 
-        CUDFDescriptor actualDescriptor = ivyAdapter.toCUDF(moduleDescriptors);
+        CUDFDescriptor actualDescriptor = ivyAdapter.toCUDF(dependencyDescriptors);
         CUDFDescriptor expectedDescriptor = createDescriptor();
 
         assertPreamble(expectedDescriptor.getPreamble(), actualDescriptor.getPreamble());
