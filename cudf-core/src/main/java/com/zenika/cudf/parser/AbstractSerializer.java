@@ -73,6 +73,9 @@ public abstract class AbstractSerializer {
 
     private ParsedRequest processRequest(CUDFDescriptor descriptor) {
         Request request = descriptor.getRequest();
+        if (request == null) {
+            return null;
+        }
         ParsedRequest parsedRequest = new ParsedRequest();
         parsedRequest.setInstall(processBinarySet(request.getInstall()));
         parsedRequest.setRemove(processBinarySet(request.getRemove()));
