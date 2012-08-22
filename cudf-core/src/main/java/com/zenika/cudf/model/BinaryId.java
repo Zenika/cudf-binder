@@ -10,9 +10,17 @@ public class BinaryId {
     private final int version;
 
     public BinaryId(String name, String organisation, int version) {
+        check(name, "The name must be not null");
+        check(organisation, "The organisation must be not null");
         this.name = name;
         this.organisation = organisation;
         this.version = version;
+    }
+
+    private void check(String string, String message) {
+        if (string == null) {
+            throw new IllegalArgumentException(message);
+        }
     }
 
     public String getName() {
@@ -29,14 +37,24 @@ public class BinaryId {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         BinaryId binaryId = (BinaryId) o;
 
-        if (version != binaryId.version) return false;
-        if (!name.equals(binaryId.name)) return false;
-        if (!organisation.equals(binaryId.organisation)) return false;
+        if (version != binaryId.version) {
+            return false;
+        }
+        if (!name.equals(binaryId.name)) {
+            return false;
+        }
+        if (!organisation.equals(binaryId.organisation)) {
+            return false;
+        }
 
         return true;
     }
