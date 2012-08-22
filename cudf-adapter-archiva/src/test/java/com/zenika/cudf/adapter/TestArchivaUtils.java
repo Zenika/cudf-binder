@@ -1,21 +1,13 @@
 package com.zenika.cudf.adapter;
 
-import com.zenika.cudf.model.Binary;
-import com.zenika.cudf.model.BinaryId;
-import com.zenika.cudf.model.CUDFDescriptor;
-import com.zenika.cudf.model.Preamble;
-import com.zenika.cudf.model.Request;
+import com.zenika.cudf.model.*;
 import org.apache.archiva.metadata.model.Dependency;
+import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.Organization;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Antoine Rouaze <antoine.rouaze@zenika.com>
@@ -42,7 +34,7 @@ public class TestArchivaUtils {
         return null;
     }
 
-    public static ProjectVersionMetadata findProjectVersionMetadata(String name, String version, Organization organization, Set<ProjectVersionMetadata> projectVersionMetadatas) {
+    public static ProjectVersionMetadata findProjectVersionMetadata(String name, String version, Organization organization, Collection<ProjectVersionMetadata> projectVersionMetadatas) {
         for (ProjectVersionMetadata projectVersionMetadata : projectVersionMetadatas) {
             if (projectVersionMetadata.getName().equals(name) && projectVersionMetadata.getOrganization().getName().equals(organization.getName()) && projectVersionMetadata.getVersion().equals(version)) {
                 return projectVersionMetadata;
@@ -70,19 +62,16 @@ public class TestArchivaUtils {
         dependencies.add(dependency3);
 
         ProjectVersionMetadata projectVersionMetadata1 = new ProjectVersionMetadata();
-        projectVersionMetadata1.setOrganization(organization);
-        projectVersionMetadata1.setName("jar1");
+        projectVersionMetadata1.addFacet(createFacet("com.zenika", "jar1", "jar"));
         projectVersionMetadata1.setId("1.0");
         projectVersionMetadata1.setDependencies(dependencies);
 
         ProjectVersionMetadata projectVersionMetadata2 = new ProjectVersionMetadata();
-        projectVersionMetadata2.setOrganization(organization);
-        projectVersionMetadata2.setName("jar2");
+        projectVersionMetadata2.addFacet(createFacet("com.zenika", "jar2", "jar"));
         projectVersionMetadata2.setId("1.0.0");
 
         ProjectVersionMetadata projectVersionMetadata3 = new ProjectVersionMetadata();
-        projectVersionMetadata3.setOrganization(organization);
-        projectVersionMetadata3.setName("jar3");
+        projectVersionMetadata3.addFacet(createFacet("com.zenika", "jar3", "jar"));
         projectVersionMetadata3.setId("1.2-SNAPSHOT");
 
         projectVersionMetadatas.add(projectVersionMetadata1);
@@ -90,6 +79,14 @@ public class TestArchivaUtils {
         projectVersionMetadatas.add(projectVersionMetadata3);
 
         return projectVersionMetadatas;
+    }
+
+    private static MetadataFacet createFacet(String organisation, String name, String type) {
+        MavenProjectFacet facet = new MavenProjectFacet();
+        facet.setArtifactId(name);
+        facet.setGroupId(organisation);
+        facet.setPackaging(type);
+        return facet;
     }
 
     public static CUDFDescriptor createDescriptor() {

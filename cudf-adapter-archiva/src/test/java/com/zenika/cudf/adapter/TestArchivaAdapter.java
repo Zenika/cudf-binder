@@ -9,20 +9,12 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import static com.zenika.cudf.adapter.TestArchivaUtils.BINARY_ID_1;
-import static com.zenika.cudf.adapter.TestArchivaUtils.BINARY_ID_2;
-import static com.zenika.cudf.adapter.TestArchivaUtils.BINARY_ID_3;
-import static com.zenika.cudf.adapter.TestArchivaUtils.ORGANIZATION;
-import static com.zenika.cudf.adapter.TestArchivaUtils.createDescriptor;
-import static com.zenika.cudf.adapter.TestArchivaUtils.createProjectVersionMetadatas;
-import static com.zenika.cudf.adapter.TestArchivaUtils.findBinaryByBinaryId;
-import static com.zenika.cudf.adapter.TestArchivaUtils.findProjectVersionMetadata;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static com.zenika.cudf.adapter.TestArchivaUtils.*;
+import static org.junit.Assert.*;
 
 /**
  * @author Antoine Rouaze <antoine.rouaze@zenika.com>
@@ -40,7 +32,7 @@ public class TestArchivaAdapter {
     public void testFromCUDF() {
         CUDFDescriptor descriptor = createDescriptor();
 
-        Set<ProjectVersionMetadata> actualProjectVersionMetadatas = archivaAdapter.fromCUDF(descriptor);
+        Collection<ProjectVersionMetadata> actualProjectVersionMetadatas = archivaAdapter.fromCUDF(descriptor);
         Set<ProjectVersionMetadata> expectedProjectVersionMetadatas = createProjectVersionMetadatas();
 
         ProjectVersionMetadata actualProjectVersionMetadata1 = findProjectVersionMetadata("jar1", "1.0", ORGANIZATION,
