@@ -1,5 +1,7 @@
 package com.zenika.cudf.adapter;
 
+import com.zenika.cudf.adapter.metadata.MetadataFacetAdapter;
+import com.zenika.cudf.adapter.metadata.MetadataFacetAdapterFactory;
 import com.zenika.cudf.model.Binary;
 import com.zenika.cudf.model.BinaryId;
 import com.zenika.cudf.model.CUDFDescriptor;
@@ -7,18 +9,15 @@ import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.Organization;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Antoine Rouaze <antoine.rouaze@zenika.com>
  */
-public class ArchivaAdapter implements Adapter<Set<ProjectVersionMetadata>, Set<ProjectVersionMetadata>> {
+public class ArchivaAdapter implements Adapter<Collection<ProjectVersionMetadata>, Collection<ProjectVersionMetadata>> {
 
     @Override
-    public Set<ProjectVersionMetadata> fromCUDF(CUDFDescriptor descriptor) {
+    public Collection<ProjectVersionMetadata> fromCUDF(CUDFDescriptor descriptor) {
         Set<ProjectVersionMetadata> projectVersionMetadatas = new HashSet<ProjectVersionMetadata>();
         Set<Binary> binaries = descriptor.getPackages();
         for (Binary binary : binaries) {
@@ -51,13 +50,15 @@ public class ArchivaAdapter implements Adapter<Set<ProjectVersionMetadata>, Set<
     }
 
     @Override
-    public CUDFDescriptor toCUDF(Set<ProjectVersionMetadata> descriptors) {
+    public CUDFDescriptor toCUDF(Collection<ProjectVersionMetadata> descriptors) {
         CUDFDescriptor descriptor = new CUDFDescriptor();
         Set<Binary> binaries = new HashSet<Binary>();
         for (ProjectVersionMetadata projectVersionMetadata : descriptors) {
-            BinaryId binaryId = new BinaryId(projectVersionMetadata.getName(), projectVersionMetadata.getOrganization().getName(), 0);
+            MetadataFacetAdapter metadataFacetAdapter = MetadataFacetAdapterFactory.getAdapterByFacet(projectVersionMetadata.getFacets());
+            BinaryId binaryId = new BinaryId(metadataFacetAdapter.getName(), metadataFacetAdapter.getOrganisation(), 0);
             Binary binary = new Binary(binaryId);
             binary.setRevision(projectVersionMetadata.getVersion());
+            binary.setType(metadataFacetAdapter.getType());
             Set<Binary> dependencies = convertArchivaDependencies(projectVersionMetadata.getDependencies());
             binary.setDependencies(dependencies);
             binaries.add(binary);
