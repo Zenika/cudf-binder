@@ -22,10 +22,12 @@ import static org.junit.Assert.*;
 public class TestArchivaAdapter {
 
     private ArchivaAdapter archivaAdapter;
+    private VersionResolverMock mock;
 
     @Before
     public void setUp() {
-        archivaAdapter = new ArchivaAdapter();
+        mock = new VersionResolverMock();
+        archivaAdapter = new ArchivaAdapter(mock);
     }
 
     @Test
@@ -106,5 +108,14 @@ public class TestArchivaAdapter {
 
     private void assertRequest(Request expectedRequest, Request actualRequest) {
         assertNull(actualRequest);
+    }
+
+    @Test
+    public void testVersionResolverCall() {
+        Set<ProjectVersionMetadata> projectVersionMetadatas = createProjectVersionMetadatas();
+        archivaAdapter.toCUDF(projectVersionMetadatas);
+        assertTrue(mock.isCalled());
+        // 3 times for the 3 binaries and 2 times for the 2 dependencies of the "jar1" binary
+        assertEquals(mock.getNumberOfCall(), 5);
     }
 }
