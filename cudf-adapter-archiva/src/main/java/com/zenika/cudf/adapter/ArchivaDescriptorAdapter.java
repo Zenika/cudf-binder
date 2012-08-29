@@ -1,11 +1,9 @@
 package com.zenika.cudf.adapter;
 
-import com.zenika.cudf.adapter.metadata.MetadataFacetAdapter;
-import com.zenika.cudf.adapter.metadata.MetadataFacetAdapterFactory;
+import com.zenika.cudf.adapter.cache.Cache;
+import com.zenika.cudf.adapter.cache.CachedBinaries;
 import com.zenika.cudf.adapter.resolver.CUDFVersionResolver;
-import com.zenika.cudf.model.Binary;
-import com.zenika.cudf.model.BinaryId;
-import com.zenika.cudf.model.CUDFDescriptor;
+import com.zenika.cudf.model.*;
 import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.Organization;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
@@ -15,18 +13,21 @@ import java.util.*;
 /**
  * @author Antoine Rouaze <antoine.rouaze@zenika.com>
  */
-public class ArchivaAdapter implements Adapter<Collection<ProjectVersionMetadata>, Collection<ProjectVersionMetadata>> {
+public class ArchivaDescriptorAdapter
+        implements DescriptorAdapter<Collection<ProjectVersionMetadata>, Collection<ProjectVersionMetadata>> {
 
-    private final CUDFVersionResolver versionResolver;
+    private Cache cache;
+    private final ArchivaBinaryAdapter archivaBinaryAdapter;
 
-    public ArchivaAdapter(CUDFVersionResolver versionResolver) {
-        this.versionResolver = versionResolver;
+    public ArchivaDescriptorAdapter(CUDFVersionResolver versionResolver, ArchivaBinaryAdapter archivaBinaryAdapter) {
+        this.archivaBinaryAdapter = archivaBinaryAdapter;
+        this.archivaBinaryAdapter.setVersionResolver(versionResolver);
     }
 
     @Override
     public Collection<ProjectVersionMetadata> fromCUDF(CUDFDescriptor descriptor) {
         Set<ProjectVersionMetadata> projectVersionMetadatas = new HashSet<ProjectVersionMetadata>();
-        Set<Binary> binaries = descriptor.getPackages();
+        Set<Binary> binaries = descriptor.getBinaries().getAllBinaries();
         for (Binary binary : binaries) {
             BinaryId binaryId = binary.getBinaryId();
             ProjectVersionMetadata projectVersionMetadata = new ProjectVersionMetadata();
@@ -59,31 +60,29 @@ public class ArchivaAdapter implements Adapter<Collection<ProjectVersionMetadata
     @Override
     public CUDFDescriptor toCUDF(Collection<ProjectVersionMetadata> descriptors) {
         CUDFDescriptor descriptor = new CUDFDescriptor();
-        Set<Binary> binaries = new HashSet<Binary>();
+        Binaries binaries = getBinaries();
         for (ProjectVersionMetadata projectVersionMetadata : descriptors) {
-            MetadataFacetAdapter metadataFacetAdapter = MetadataFacetAdapterFactory.getAdapterByFacet(projectVersionMetadata.getFacets());
-            BinaryId binaryId = new BinaryId(metadataFacetAdapter.getName(), metadataFacetAdapter.getOrganisation(), 0);
-            Binary binary = new Binary(binaryId);
-            binary.setRevision(projectVersionMetadata.getVersion());
-            binary = versionResolver.resolve(binary);
-            binary.setType(metadataFacetAdapter.getType());
-            Set<Binary> dependencies = convertArchivaDependencies(projectVersionMetadata.getDependencies());
-            binary.setDependencies(dependencies);
-            binaries.add(binary);
+            binaries.addBinary(archivaBinaryAdapter.toCUDF(projectVersionMetadata));
         }
-        descriptor.setPackages(binaries);
+        descriptor.setBinaries(binaries);
         return descriptor;
     }
 
-    private Set<Binary> convertArchivaDependencies(List<Dependency> archivaDependencies) {
-        Set<Binary> dependencies = new HashSet<Binary>();
-        for (Dependency archivaDependency : archivaDependencies) {
-            BinaryId dependencyId = new BinaryId(archivaDependency.getArtifactId(), archivaDependency.getGroupId(), 0);
-            Binary dependency = new Binary(dependencyId);
-            dependency.setRevision(archivaDependency.getVersion());
-            dependency = versionResolver.resolve(dependency);
-            dependencies.add(dependency);
+    private Binaries getBinaries() {
+        Binaries binaries;
+        if (isCacheActive()) {
+            binaries = new CachedBinaries(cache);
+        } else {
+            binaries = new DefaultBinaries();
         }
-        return dependencies;
+        return binaries;
+    }
+
+    private boolean isCacheActive() {
+        return cache != null;
+    }
+
+    public void setCache(Cache cache) {
+        this.cache = cache;
     }
 }
