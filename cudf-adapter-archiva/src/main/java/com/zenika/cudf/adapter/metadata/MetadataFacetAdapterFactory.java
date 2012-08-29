@@ -13,7 +13,7 @@ public class MetadataFacetAdapterFactory {
 
     private static final String[] SUPPORTED_FACET_ID = {MavenProjectFacet.FACET_ID};
 
-    public static MetadataFacetAdapter getAdapterByFacet(Map<String, MetadataFacet> facets) {
+    public static MetadataFacetAdapter getAdapterByFacets(Map<String, MetadataFacet> facets) {
         for (String facetId : SUPPORTED_FACET_ID) {
             if (facets.containsKey(facetId)) {
                 return new MavenMetadataFacetAdapter((MavenProjectFacet) facets.get(facetId));
