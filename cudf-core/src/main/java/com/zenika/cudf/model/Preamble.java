@@ -79,6 +79,7 @@ public class Preamble {
         properties.put("recommends", "vpkgformula = [true!]");
         properties.put("suggests", "vpkglist = []");
         properties.put("url", "string = [\"\"]");
+        properties.put("type", "string");
         preamble.setProperties(properties);
         return preamble;
     }
