@@ -1,4 +1,4 @@
-preamble:
+preamble: 
 property: number: string, recommends: vpkgformula = [true!], suggests: vpkglist = [],
  type: string = [""]
 
@@ -18,5 +18,5 @@ number: 1.2-SNAPSHOT
 version: 2
 type: jar
 
-request:
+request: 
 install: zenika%3ajar1 = 1

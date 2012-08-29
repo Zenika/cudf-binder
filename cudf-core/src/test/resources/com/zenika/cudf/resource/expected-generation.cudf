@@ -1,4 +1,4 @@
-preamble:
+preamble: 
 property: key: value
 req-checksum: req
 status-checksum: status
@@ -21,5 +21,5 @@ type: jar
 number: 1.2-SNAPSHOT
 installed: true
 
-request:
+request: 
 install: zenika%3ajar1 = 1
