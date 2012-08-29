@@ -1,9 +1,11 @@
 package com.zenika.cudf.model;
 
+import java.io.Serializable;
+
 /**
  * @author Antoine Rouaze <antoine.rouaze@zenika.com>
  */
-public class BinaryId {
+public class BinaryId implements Serializable {
 
     private final String name;
     private final String organisation;

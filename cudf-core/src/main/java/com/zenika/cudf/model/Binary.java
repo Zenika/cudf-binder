@@ -1,12 +1,13 @@
 package com.zenika.cudf.model;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * @author Antoine Rouaze <antoine.rouaze@zenika.com>
  */
-public class Binary {
+public class Binary implements Serializable {
 
     private final BinaryId binaryId;
     private String revision;

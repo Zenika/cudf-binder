@@ -1,8 +1,5 @@
 package com.zenika.cudf.model;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * @author Antoine Rouaze <antoine.rouaze@zenika.com>
  */
@@ -10,7 +7,7 @@ public class CUDFDescriptor {
 
     private Preamble preamble;
     private Request request;
-    private Set<Binary> packages = new HashSet<Binary>();
+    private Binaries binaries;
 
     public Preamble getPreamble() {
         return preamble;
@@ -20,12 +17,12 @@ public class CUDFDescriptor {
         this.preamble = preamble;
     }
 
-    public Set<Binary> getPackages() {
-        return packages;
+    public Binaries getBinaries() {
+        return binaries;
     }
 
-    public void setPackages(Set<Binary> packages) {
-        this.packages = packages;
+    public void setBinaries(Binaries binaries) {
+        this.binaries = binaries;
     }
 
     public Request getRequest() {
@@ -43,7 +40,7 @@ public class CUDFDescriptor {
 
         CUDFDescriptor that = (CUDFDescriptor) o;
 
-        if (!packages.equals(that.packages)) return false;
+        if (binaries != null ? !binaries.equals(that.binaries) : that.binaries != null) return false;
         if (preamble != null ? !preamble.equals(that.preamble) : that.preamble != null) return false;
         if (request != null ? !request.equals(that.request) : that.request != null) return false;
 
@@ -54,7 +51,7 @@ public class CUDFDescriptor {
     public int hashCode() {
         int result = preamble != null ? preamble.hashCode() : 0;
         result = 31 * result + (request != null ? request.hashCode() : 0);
-        result = 31 * result + packages.hashCode();
+        result = 31 * result + (binaries != null ? binaries.hashCode() : 0);
         return result;
     }
 }
