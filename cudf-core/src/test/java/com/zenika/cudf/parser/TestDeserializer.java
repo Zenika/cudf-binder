@@ -1,13 +1,8 @@
 package com.zenika.cudf.parser;
 
-import com.zenika.cudf.model.Binary;
-import com.zenika.cudf.model.CUDFDescriptor;
-import com.zenika.cudf.model.Preamble;
-import com.zenika.cudf.model.Request;
+import com.zenika.cudf.model.*;
 import com.zenika.cudf.parser.mock.MockDeserializer;
 import org.junit.Test;
-
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -26,7 +21,7 @@ public class TestDeserializer extends AbstractTestParser {
         assertNotNull(actualDescriptor);
 
         assertPreamble(expectedDescriptor.getPreamble(), actualDescriptor.getPreamble());
-        assertBinaries(expectedDescriptor.getPackages(), actualDescriptor.getPackages());
+        assertBinaries(expectedDescriptor.getBinaries(), actualDescriptor.getBinaries());
         assertRequest(expectedDescriptor.getRequest(), actualDescriptor.getRequest());
     }
 
@@ -37,14 +32,14 @@ public class TestDeserializer extends AbstractTestParser {
         assertEquals(expectedPreamble.getUnivChecksum(), actualPreamble.getUnivChecksum());
     }
 
-    private void assertBinaries(Set<Binary> expectedBinaries, Set<Binary> actualBinaries) {
-        Binary actualBinary1 = findBinaryByBinaryId(binaryId1, actualBinaries);
-        Binary actualBinary2 = findBinaryByBinaryId(binaryId2, actualBinaries);
-        Binary actualBinary3 = findBinaryByBinaryId(binaryId3, actualBinaries);
+    private void assertBinaries(Binaries expectedBinaries, Binaries actualBinaries) {
+        Binary actualBinary1 = actualBinaries.getBinaryById(binaryId1);
+        Binary actualBinary2 = actualBinaries.getBinaryById(binaryId2);
+        Binary actualBinary3 = actualBinaries.getBinaryById(binaryId3);
 
-        Binary expectedBinary1 = findBinaryByBinaryId(binaryId1, expectedBinaries);
-        Binary expectedBinary2 = findBinaryByBinaryId(binaryId2, expectedBinaries);
-        Binary expectedBinary3 = findBinaryByBinaryId(binaryId3, expectedBinaries);
+        Binary expectedBinary1 = expectedBinaries.getBinaryById(binaryId1);
+        Binary expectedBinary2 = expectedBinaries.getBinaryById(binaryId2);
+        Binary expectedBinary3 = expectedBinaries.getBinaryById(binaryId3);
 
         assertBinary(expectedBinary1, actualBinary1);
         assertBinary(expectedBinary2, actualBinary2);
