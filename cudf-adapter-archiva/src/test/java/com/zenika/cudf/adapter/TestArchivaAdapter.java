@@ -1,9 +1,6 @@
 package com.zenika.cudf.adapter;
 
-import com.zenika.cudf.model.Binary;
-import com.zenika.cudf.model.CUDFDescriptor;
-import com.zenika.cudf.model.Preamble;
-import com.zenika.cudf.model.Request;
+import com.zenika.cudf.model.*;
 import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.junit.Before;
@@ -21,13 +18,13 @@ import static org.junit.Assert.*;
  */
 public class TestArchivaAdapter {
 
-    private ArchivaAdapter archivaAdapter;
+    private ArchivaDescriptorAdapter archivaAdapter;
     private VersionResolverMock mock;
 
     @Before
     public void setUp() {
         mock = new VersionResolverMock();
-        archivaAdapter = new ArchivaAdapter(mock);
+        archivaAdapter = new ArchivaDescriptorAdapter(mock, new ArchivaBinaryAdapter());
     }
 
     @Test
@@ -79,7 +76,7 @@ public class TestArchivaAdapter {
         CUDFDescriptor expectedDescriptor = createDescriptor();
 
         assertPreamble(expectedDescriptor.getPreamble(), actualDescriptor.getPreamble());
-        assertBinaries(expectedDescriptor.getPackages(), actualDescriptor.getPackages());
+        assertBinaries(expectedDescriptor.getBinaries(), actualDescriptor.getBinaries());
         assertRequest(expectedDescriptor.getRequest(), actualDescriptor.getRequest());
     }
 
@@ -87,14 +84,14 @@ public class TestArchivaAdapter {
         assertNull(actualPreamble);
     }
 
-    private void assertBinaries(Set<Binary> expectedBinaries, Set<Binary> actualBinaries) {
-        Binary actualBinary1 = findBinaryByBinaryId(BINARY_ID_1, actualBinaries);
-        Binary actualBinary2 = findBinaryByBinaryId(BINARY_ID_2, actualBinaries);
-        Binary actualBinary3 = findBinaryByBinaryId(BINARY_ID_3, actualBinaries);
+    private void assertBinaries(Binaries expectedBinaries, Binaries actualBinaries) {
+        Binary actualBinary1 = expectedBinaries.getBinaryById(BINARY_ID_1);
+        Binary actualBinary2 = expectedBinaries.getBinaryById(BINARY_ID_2);
+        Binary actualBinary3 = expectedBinaries.getBinaryById(BINARY_ID_3);
 
-        Binary expectedBinary1 = findBinaryByBinaryId(BINARY_ID_1, expectedBinaries);
-        Binary expectedBinary2 = findBinaryByBinaryId(BINARY_ID_2, expectedBinaries);
-        Binary expectedBinary3 = findBinaryByBinaryId(BINARY_ID_3, expectedBinaries);
+        Binary expectedBinary1 = actualBinaries.getBinaryById(BINARY_ID_1);
+        Binary expectedBinary2 = actualBinaries.getBinaryById(BINARY_ID_2);
+        Binary expectedBinary3 = actualBinaries.getBinaryById(BINARY_ID_3);
 
         assertBinary(expectedBinary1, actualBinary1);
         assertBinary(expectedBinary2, actualBinary2);
