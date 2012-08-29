@@ -1,10 +1,7 @@
 package com.zenika.cudf.apdapter;
 
-import com.zenika.cudf.apdater.IvyAdapter;
-import com.zenika.cudf.model.Binary;
-import com.zenika.cudf.model.CUDFDescriptor;
-import com.zenika.cudf.model.Preamble;
-import com.zenika.cudf.model.Request;
+import com.zenika.cudf.apdater.IvyDescriptorAdapter;
+import com.zenika.cudf.model.*;
 import org.apache.ivy.core.module.descriptor.DependencyDescriptor;
 import org.apache.ivy.core.module.descriptor.ModuleDescriptor;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
@@ -12,20 +9,8 @@ import org.junit.Test;
 
 import java.util.Set;
 
-import static com.zenika.cudf.apdapter.TestIvyUtils.BINARY_ID_1;
-import static com.zenika.cudf.apdapter.TestIvyUtils.BINARY_ID_2;
-import static com.zenika.cudf.apdapter.TestIvyUtils.BINARY_ID_3;
-import static com.zenika.cudf.apdapter.TestIvyUtils.MODULE_REVISION_ID_1;
-import static com.zenika.cudf.apdapter.TestIvyUtils.MODULE_REVISION_ID_2;
-import static com.zenika.cudf.apdapter.TestIvyUtils.MODULE_REVISION_ID_3;
-import static com.zenika.cudf.apdapter.TestIvyUtils.createDependencyDescriptor;
-import static com.zenika.cudf.apdapter.TestIvyUtils.createDescriptor;
-import static com.zenika.cudf.apdapter.TestIvyUtils.createModuleDescriptors;
-import static com.zenika.cudf.apdapter.TestIvyUtils.findBinaryByBinaryId;
-import static com.zenika.cudf.apdapter.TestIvyUtils.findModuleDescriptorByModuleRevisionId;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static com.zenika.cudf.apdapter.TestIvyUtils.*;
+import static org.junit.Assert.*;
 
 /**
  * @author Antoine Rouaze <antoine.rouaze@zenika.com>
@@ -35,7 +20,7 @@ public class TestIvyAdapter {
     @Test
     public void testFromCUDF() {
         CUDFDescriptor descriptor = createDescriptor();
-        IvyAdapter ivyAdapter = new IvyAdapter();
+        IvyDescriptorAdapter ivyAdapter = new IvyDescriptorAdapter();
 
         Set<ModuleDescriptor> actualModuleDescriptors = ivyAdapter.fromCUDF(descriptor);
         Set<ModuleDescriptor> expectedModuleDescriptors = createModuleDescriptors();
@@ -78,13 +63,13 @@ public class TestIvyAdapter {
     @Test
     public void testToCUDF() {
         Set<DependencyDescriptor> dependencyDescriptors = createDependencyDescriptor();
-        IvyAdapter ivyAdapter = new IvyAdapter();
+        IvyDescriptorAdapter ivyAdapter = new IvyDescriptorAdapter();
 
         CUDFDescriptor actualDescriptor = ivyAdapter.toCUDF(dependencyDescriptors);
         CUDFDescriptor expectedDescriptor = createDescriptor();
 
         assertPreamble(expectedDescriptor.getPreamble(), actualDescriptor.getPreamble());
-        assertBinaries(expectedDescriptor.getPackages(), actualDescriptor.getPackages());
+        assertBinaries(expectedDescriptor.getBinaries(), actualDescriptor.getBinaries());
         assertRequest(expectedDescriptor.getRequest(), actualDescriptor.getRequest());
     }
 
@@ -92,14 +77,14 @@ public class TestIvyAdapter {
         assertNull(actualPreamble);
     }
 
-    private void assertBinaries(Set<Binary> expectedBinaries, Set<Binary> actualBinaries) {
-        Binary actualBinary1 = findBinaryByBinaryId(BINARY_ID_1, actualBinaries);
-        Binary actualBinary2 = findBinaryByBinaryId(BINARY_ID_2, actualBinaries);
-        Binary actualBinary3 = findBinaryByBinaryId(BINARY_ID_3, actualBinaries);
+    private void assertBinaries(Binaries expectedBinaries, Binaries actualBinaries) {
+        Binary actualBinary1 = actualBinaries.getBinaryById(BINARY_ID_1);
+        Binary actualBinary2 = actualBinaries.getBinaryById(BINARY_ID_2);
+        Binary actualBinary3 = actualBinaries.getBinaryById(BINARY_ID_3);
 
-        Binary expectedBinary1 = findBinaryByBinaryId(BINARY_ID_1, expectedBinaries);
-        Binary expectedBinary2 = findBinaryByBinaryId(BINARY_ID_2, expectedBinaries);
-        Binary expectedBinary3 = findBinaryByBinaryId(BINARY_ID_3, expectedBinaries);
+        Binary expectedBinary1 = expectedBinaries.getBinaryById(BINARY_ID_1);
+        Binary expectedBinary2 = expectedBinaries.getBinaryById(BINARY_ID_2);
+        Binary expectedBinary3 = expectedBinaries.getBinaryById(BINARY_ID_3);
 
         assertBinary(expectedBinary1, actualBinary1);
         assertBinary(expectedBinary2, actualBinary2);
