@@ -8,9 +8,9 @@ import java.util.Set;
  */
 public class CUDFParsedDescriptor {
 
-    public static final String PREAMBLE_START_LINE = "preamble:";
+    public static final String PREAMBLE_START_LINE = "preamble: ";
     public static final String PACKAGE_START_LINE = "package: ";
-    public static final String REQUEST_START_LINE = "request:";
+    public static final String REQUEST_START_LINE = "request: ";
 
     private ParsedPreamble preamble;
     private ParsedRequest request;
