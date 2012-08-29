@@ -1,10 +1,6 @@
 package com.zenika.cudf.parser;
 
-import com.zenika.cudf.model.Binary;
-import com.zenika.cudf.model.BinaryId;
-import com.zenika.cudf.model.CUDFDescriptor;
-import com.zenika.cudf.model.Preamble;
-import com.zenika.cudf.model.Request;
+import com.zenika.cudf.model.*;
 import com.zenika.cudf.parser.model.CUDFParsedDescriptor;
 import com.zenika.cudf.parser.model.ParsedBinary;
 import com.zenika.cudf.parser.model.ParsedPreamble;
@@ -46,7 +42,7 @@ public abstract class AbstractSerializer {
 
     private Set<ParsedBinary> processBinaries(CUDFDescriptor descriptor) {
         Set<ParsedBinary> parsedBinaries = new HashSet<ParsedBinary>();
-        Set<Binary> binaries = descriptor.getPackages();
+        Set<Binary> binaries = descriptor.getBinaries().getAllBinaries();
         for (Binary binary : binaries) {
             ParsedBinary parsedBinary = new ParsedBinary();
             parsedBinary.setBinaryId(binary.getBinaryId());

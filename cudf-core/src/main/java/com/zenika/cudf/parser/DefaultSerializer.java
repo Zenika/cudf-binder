@@ -9,6 +9,7 @@ import com.zenika.cudf.parser.model.ParsedRequest;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -26,9 +27,16 @@ public class DefaultSerializer extends AbstractSerializer {
     private static final Logger LOG = Logger.getLogger(FileSerializer.class.getName());
 
     private final Writer writer;
+    private final Map<String, String> illegals = new HashMap<String, String>();
 
     public DefaultSerializer(Writer writer) {
         this.writer = writer;
+        initiateIllegalsCharatersForCUDF();
+    }
+
+    private void initiateIllegalsCharatersForCUDF() {
+        illegals.put("_", Integer.toHexString('_'));
+        illegals.put(":", Integer.toHexString(':'));
     }
 
     @Override
@@ -91,8 +99,8 @@ public class DefaultSerializer extends AbstractSerializer {
     private void writeParsedBinaries(BufferedWriter writer, Set<ParsedBinary> parsedBinaries) throws IOException {
         for (ParsedBinary parsedBinary : parsedBinaries) {
             BinaryId binaryId = parsedBinary.getBinaryId();
-            writer.append(CUDFParsedDescriptor.PACKAGE_START_LINE).append(binaryId.getOrganisation())
-                    .append(ParsedBinary.SEPARATOR).append(binaryId.getName()).append("\n");
+            writer.append(CUDFParsedDescriptor.PACKAGE_START_LINE).append(encodeOrganisationWithName(
+                    binaryId.getOrganisation(), binaryId.getName())).append("\n");
             writer.append(ParsedBinary.VERSION_START_LINE).append(String.valueOf(binaryId.getVersion())).append("\n");
             writer.append(ParsedBinary.TYPE_START_LINE).append(parsedBinary.getType()).append("\n");
             writer.append(ParsedBinary.NUMBER_START_LINE).append(parsedBinary.getRevision()).append("\n");
@@ -132,7 +140,7 @@ public class DefaultSerializer extends AbstractSerializer {
         Iterator<BinaryId> iterator1 = binaryIds.iterator();
         while (iterator1.hasNext()) {
             BinaryId dependency = iterator1.next();
-            writer.append(dependency.getOrganisation()).append(ParsedBinary.SEPARATOR).append(dependency.getName())
+            writer.append(encodeOrganisationWithName(dependency.getOrganisation(), dependency.getName()))
                     .append(" = ").append(String.valueOf(dependency.getVersion()));
             if (iterator1.hasNext()) {
                 writer.append(", ");
@@ -140,5 +148,16 @@ public class DefaultSerializer extends AbstractSerializer {
                 writer.newLine();
             }
         }
+    }
+
+    private String encodeOrganisationWithName(String organisation, String name) {
+        return encodingString(organisation + ParsedBinary.SEPARATOR + name);
+    }
+
+    private String encodingString(String input) {
+        for (String illegal : illegals.keySet()) {
+            input = input.replaceAll(illegal, '%' + illegals.get(illegal));
+        }
+        return input;
     }
 }

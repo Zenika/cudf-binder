@@ -1,10 +1,6 @@
 package com.zenika.cudf.parser;
 
-import com.zenika.cudf.model.Binary;
-import com.zenika.cudf.model.BinaryId;
-import com.zenika.cudf.model.CUDFDescriptor;
-import com.zenika.cudf.model.Preamble;
-import com.zenika.cudf.model.Request;
+import com.zenika.cudf.model.*;
 import com.zenika.cudf.parser.model.CUDFParsedDescriptor;
 import com.zenika.cudf.parser.model.ParsedBinary;
 import com.zenika.cudf.parser.model.ParsedPreamble;
@@ -25,11 +21,11 @@ public abstract class AbstractDeserializer {
         CUDFDescriptor cudfDescriptor = new CUDFDescriptor();
 
         Preamble preamble = processPreamble(parsedDescriptor);
-        Set<Binary> binaries = processParsedBinaries(parsedDescriptor);
+        Binaries binaries = processParsedBinaries(parsedDescriptor);
         Request request = processParsedRequest(parsedDescriptor, binaries);
 
         cudfDescriptor.setPreamble(preamble);
-        cudfDescriptor.setPackages(binaries);
+        cudfDescriptor.setBinaries(binaries);
         cudfDescriptor.setRequest(request);
 
         return cudfDescriptor;
@@ -47,11 +43,11 @@ public abstract class AbstractDeserializer {
         return preamble;
     }
 
-    private Set<Binary> processParsedBinaries(CUDFParsedDescriptor parsedDescriptor) {
+    private Binaries processParsedBinaries(CUDFParsedDescriptor parsedDescriptor) {
         Set<ParsedBinary> parsedBinaries = parsedDescriptor.getPackages();
         Map<BinaryId, ParsedBinary> parsedRevisions = buildParsedRevisions(parsedBinaries);
 
-        Set<Binary> binaries = new HashSet<Binary>();
+        Binaries binaries = new DefaultBinaries();
         for (ParsedBinary parsedBinary : parsedBinaries) {
             Binary binary = new Binary(parsedBinary.getBinaryId());
             binary.setRevision(parsedBinary.getRevision());
@@ -59,7 +55,7 @@ public abstract class AbstractDeserializer {
             binary.setType(parsedBinary.getType());
             Set<Binary> dependencies = processParsedBinaryDependencies(parsedBinary, parsedRevisions);
             binary.setDependencies(dependencies);
-            binaries.add(binary);
+            binaries.addBinary(binary);
         }
         return binaries;
     }
@@ -85,10 +81,10 @@ public abstract class AbstractDeserializer {
         return dependencies;
     }
 
-    private Request processParsedRequest(CUDFParsedDescriptor parsedDescriptor, Set<Binary> binaries) {
+    private Request processParsedRequest(CUDFParsedDescriptor parsedDescriptor, Binaries binaries) {
         Request request = new Request();
         ParsedRequest parsedRequest = parsedDescriptor.getRequest();
-        Map<BinaryId, Binary> revisions = buildRevisionMap(binaries);
+        Map<BinaryId, Binary> revisions = buildRevisionMap(binaries.getAllBinaries());
         request.setInstall(processBinaryIdSet(revisions, parsedRequest.getInstall()));
         request.setUpdate(processBinaryIdSet(revisions, parsedRequest.getUpdate()));
         request.setRemove(processBinaryIdSet(revisions, parsedRequest.getRemove()));
