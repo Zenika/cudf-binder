@@ -43,7 +43,7 @@ public abstract class AbstractDeserializer {
         return preamble;
     }
 
-    private Binaries processParsedBinaries(CUDFParsedDescriptor parsedDescriptor) {
+    private Binaries processParsedBinaries(CUDFParsedDescriptor parsedDescriptor) throws ParsingException {
         Set<ParsedBinary> parsedBinaries = parsedDescriptor.getPackages();
         Map<BinaryId, ParsedBinary> parsedRevisions = buildParsedRevisions(parsedBinaries);
 
@@ -68,9 +68,10 @@ public abstract class AbstractDeserializer {
         return revisions;
     }
 
-    private Set<Binary> processParsedBinaryDependencies(ParsedBinary parsedBinary, Map<BinaryId, ParsedBinary> parsedRevisions) {
+    private Set<Binary> processParsedBinaryDependencies(ParsedBinary parsedBinary, Map<BinaryId, ParsedBinary> parsedRevisions) throws ParsingException {
         Set<Binary> dependencies = new HashSet<Binary>();
         for (BinaryId binaryId : parsedBinary.getDependencies()) {
+            validateDependency(binaryId);
             ParsedBinary parsedDependency = parsedRevisions.get(binaryId);
             Binary dependency = new Binary(parsedDependency.getBinaryId());
             dependency.setRevision(parsedDependency.getRevision());
@@ -79,6 +80,12 @@ public abstract class AbstractDeserializer {
             dependencies.add(dependency);
         }
         return dependencies;
+    }
+
+    private void validateDependency(BinaryId binaryId) throws ParsingException {
+        if (binaryId.getVersion() <= 0) {
+            throw new ParsingException("The dependency binary id version of " + binaryId.getOrganisation() + ParsedBinary.SEPARATOR + binaryId.getName() + " must be either than 0");
+        }
     }
 
     private Request processParsedRequest(CUDFParsedDescriptor parsedDescriptor, Binaries binaries) {
