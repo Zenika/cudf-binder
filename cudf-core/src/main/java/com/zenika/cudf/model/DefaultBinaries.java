@@ -28,6 +28,13 @@ public class DefaultBinaries implements Binaries {
 
     private Map<BinaryId, Binary> binaries = new HashMap<BinaryId, Binary>();
 
+    public DefaultBinaries() {
+    }
+
+    public DefaultBinaries(Set<Binary> binaries) {
+        setBinaries(binaries);
+    }
+
     @Override
     public Binary getBinaryById(BinaryId binaryId) {
         return binaries.get(binaryId);
@@ -48,5 +55,10 @@ public class DefaultBinaries implements Binaries {
         for (Binary binary : binaries) {
             this.binaries.put(binary.getBinaryId(), binary);
         }
+    }
+
+    @Override
+    public Iterator<Binary> iterator() {
+        return binaries.values().iterator();
     }
 }

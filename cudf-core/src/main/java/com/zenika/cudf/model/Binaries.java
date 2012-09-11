@@ -21,7 +21,7 @@ import java.util.Set;
 /**
  * @author Antoine Rouaze <antoine.rouaze@zenika.com>
  */
-public interface Binaries {
+public interface Binaries extends Iterable<Binary> {
 
     Binary getBinaryById(BinaryId binaryId);
 
