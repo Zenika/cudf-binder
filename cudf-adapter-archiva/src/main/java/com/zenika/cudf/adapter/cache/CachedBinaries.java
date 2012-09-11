@@ -21,6 +21,7 @@ import com.zenika.cudf.model.Binary;
 import com.zenika.cudf.model.BinaryId;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -66,5 +67,10 @@ public class CachedBinaries
         for (Binary binary : binaries) {
             addBinary(binary);
         }
+    }
+
+    @Override
+    public Iterator<Binary> iterator() {
+        return getAllBinaries().iterator();
     }
 }
