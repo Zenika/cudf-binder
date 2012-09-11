@@ -18,9 +18,9 @@ package com.zenika.cudf.adapter;
 
 import com.zenika.cudf.adapter.metadata.MetadataFacetAdapter;
 import com.zenika.cudf.adapter.metadata.MetadataFacetAdapterFactory;
-import com.zenika.cudf.adapter.resolver.CUDFVersionResolver;
 import com.zenika.cudf.model.Binary;
 import com.zenika.cudf.model.BinaryId;
+import com.zenika.cudf.resolver.VersionResolver;
 import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 
@@ -33,7 +33,7 @@ import java.util.Set;
  */
 public class ArchivaBinaryAdapter implements BinaryAdapter<ProjectVersionMetadata> {
 
-    private CUDFVersionResolver versionResolver;
+    private VersionResolver versionResolver;
 
     @Override
     public ProjectVersionMetadata fromCUDF(Binary binary) {
@@ -50,7 +50,7 @@ public class ArchivaBinaryAdapter implements BinaryAdapter<ProjectVersionMetadat
         binary.setRevision(projectVersionMetadata.getVersion());
         binary.setType(metadataFacetAdapter.getType());
         binary.setDependencies(convertArchivaDependencies(projectVersionMetadata.getDependencies()));
-        binary = versionResolver.resolve(binary);
+        binary = versionResolver.resolveToCUDF(binary);
         return binary;
     }
 
@@ -67,13 +67,13 @@ public class ArchivaBinaryAdapter implements BinaryAdapter<ProjectVersionMetadat
             Binary dependency = new Binary(dependencyId);
             dependency.setRevision(archivaDependency.getVersion());
             dependency.setType(archivaDependency.getType());
-            dependency = versionResolver.resolve(dependency);
+            dependency = versionResolver.resolveToCUDF(dependency);
             dependencies.add(dependency);
         }
         return dependencies;
     }
 
-    public void setVersionResolver(CUDFVersionResolver versionResolver) {
+    public void setVersionResolver(VersionResolver versionResolver) {
         this.versionResolver = versionResolver;
     }
 }

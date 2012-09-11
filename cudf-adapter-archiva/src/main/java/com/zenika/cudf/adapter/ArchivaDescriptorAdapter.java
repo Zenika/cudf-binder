@@ -18,12 +18,12 @@ package com.zenika.cudf.adapter;
 
 import com.zenika.cudf.adapter.cache.Cache;
 import com.zenika.cudf.adapter.cache.CachedBinaries;
-import com.zenika.cudf.adapter.resolver.CUDFVersionResolver;
 import com.zenika.cudf.model.Binaries;
 import com.zenika.cudf.model.Binary;
 import com.zenika.cudf.model.BinaryId;
 import com.zenika.cudf.model.CUDFDescriptor;
 import com.zenika.cudf.model.DefaultBinaries;
+import com.zenika.cudf.resolver.VersionResolver;
 import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.Organization;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
@@ -43,7 +43,7 @@ public class ArchivaDescriptorAdapter
     private Cache cache;
     private final ArchivaBinaryAdapter archivaBinaryAdapter;
 
-    public ArchivaDescriptorAdapter(CUDFVersionResolver versionResolver, ArchivaBinaryAdapter archivaBinaryAdapter) {
+    public ArchivaDescriptorAdapter(VersionResolver versionResolver, ArchivaBinaryAdapter archivaBinaryAdapter) {
         this.archivaBinaryAdapter = archivaBinaryAdapter;
         this.archivaBinaryAdapter.setVersionResolver(versionResolver);
     }
