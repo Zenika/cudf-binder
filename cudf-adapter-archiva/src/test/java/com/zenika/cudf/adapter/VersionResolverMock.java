@@ -16,29 +16,34 @@ package com.zenika.cudf.adapter;
  * limitations under the License.
  */
 
-import com.zenika.cudf.adapter.resolver.CUDFVersionResolver;
 import com.zenika.cudf.model.Binary;
+import com.zenika.cudf.resolver.VersionResolver;
 
 /**
  * @author Antoine Rouaze <antoine.rouaze@zenika.com>
  */
-public class VersionResolverMock implements CUDFVersionResolver {
+public class VersionResolverMock implements VersionResolver {
 
-    private int numberOfCall = 0;
-    private boolean called = false;
+    private int numberOfResolveToCUDFCall = 0;
+    private int numberOfResolveFromCUDFCall = 0;
 
     @Override
-    public Binary resolve(Binary binary) {
-        called = true;
-        numberOfCall++;
+    public Binary resolveToCUDF(Binary binary) {
+        numberOfResolveToCUDFCall++;
         return binary;
     }
 
-    public boolean isCalled() {
-        return called;
+    @Override
+    public Binary resolveFromCUDF(Binary binary) {
+        numberOfResolveFromCUDFCall++;
+        return binary;
     }
 
-    public int getNumberOfCall() {
-        return numberOfCall;
+    public int getNumberOfResolveToCUDFCall() {
+        return numberOfResolveToCUDFCall;
+    }
+
+    public int getNumberOfResolveFromCUDFCall() {
+        return numberOfResolveFromCUDFCall;
     }
 }

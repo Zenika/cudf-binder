@@ -40,7 +40,6 @@ import static com.zenika.cudf.adapter.TestArchivaUtils.findProjectVersionMetadat
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Antoine Rouaze <antoine.rouaze@zenika.com>
@@ -140,8 +139,7 @@ public class TestArchivaAdapter {
     public void testVersionResolverCall() {
         Set<ProjectVersionMetadata> projectVersionMetadatas = createProjectVersionMetadatas();
         archivaAdapter.toCUDF(projectVersionMetadatas);
-        assertTrue(mock.isCalled());
         // 3 times for the 3 binaries and 2 times for the 2 dependencies of the "jar1" binary
-        assertEquals(mock.getNumberOfCall(), 5);
+        assertEquals(mock.getNumberOfResolveToCUDFCall(), 5);
     }
 }
