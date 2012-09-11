@@ -15,6 +15,46 @@
     <name>CUDF Binder</name>
     <description>Gives binding behavior to and from com.zenika.cudf</description>
 
+    <developers>
+        <developer>
+            <id>Alecharp</id>
+            <name>Adrien Lecharpentier</name>
+            <email>adrien.lecharpentier@zenika.com</email>
+            <url>http://blog.lecharpentier.org</url>
+            <organization>Zenika</organization>
+            <organizationUrl>http://zenika.com</organizationUrl>
+            <roles>
+                <role>admin</role>
+                <role>developer</role>
+            </roles>
+            <timezone>+2</timezone>
+        </developer>
+        <developer>
+            <id>Erouan</id>
+            <name>Antoine Rouaze</name>
+            <email>antoine.rouaze@zenika.com</email>
+            <organization>Zenika</organization>
+            <organizationUrl>http://zenika.com</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+2</timezone>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/</url>
+            <distribution>manuel</distribution>
+        </license>
+    </licenses>
+
+    <organization>
+        <name>Zenika</name>
+        <url>http://zenika.com</url>
+    </organization>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
