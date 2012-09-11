@@ -24,6 +24,7 @@
         <module>cudf-core</module>
         <module>cudf-adapter-ivy</module>
         <module>cudf-adapter-archiva</module>
+        <module>cudf-adapter-p2</module>
     </modules>
 
     <packaging>pom</packaging>
