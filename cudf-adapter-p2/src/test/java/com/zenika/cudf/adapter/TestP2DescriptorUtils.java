@@ -97,6 +97,35 @@ public class TestP2DescriptorUtils {
         return p2Packages;
     }
 
+    public static Collection<InstallableUnit> createInstallableUnitWithExtrasProperties() {
+        List<InstallableUnit> p2Packages = new ArrayList<InstallableUnit>();
+
+        InstallableUnit p2Package1 = createP2Package(DEFAULT_ORGANISATION, "jar1", 1);
+        p2Package1.setRequiredCapabilities(createDefaultP2Dependencies());
+        p2Package1 = addExtrasProperties(p2Package1, "1.0");
+
+        InstallableUnit p2Package2 = createP2Package(DEFAULT_ORGANISATION, "jar2", 1);
+        p2Package2 = addExtrasProperties(p2Package2, "1.0.0");
+
+        InstallableUnit p2Package3 = createP2Package(DEFAULT_ORGANISATION, "jar3", 2);
+        p2Package3 = addExtrasProperties(p2Package3, "1.2-SNAPSHOT");
+
+        p2Packages.add(p2Package1);
+        p2Packages.add(p2Package2);
+        p2Packages.add(p2Package3);
+
+        return p2Packages;
+    }
+
+    private static InstallableUnit addExtrasProperties(InstallableUnit p2package, String revision) {
+        p2package.addExtraProperty("package", p2package.getId());
+        p2package.addExtraProperty("name", p2package.getId());
+        p2package.addExtraProperty("number", revision);
+        p2package.addExtraProperty("version", String.valueOf(p2package.getVersion().getMajor()));
+        p2package.addExtraProperty("type", "jar");
+        return p2package;
+    }
+
     public static CUDFDescriptor createCUDFDescriptor() {
         CUDFDescriptor descriptor = new CUDFDescriptor();
 

@@ -40,6 +40,7 @@ import static com.zenika.cudf.adapter.TestP2DescriptorUtils.BINARY_ID_3;
 import static com.zenika.cudf.adapter.TestP2DescriptorUtils.createBinaries;
 import static com.zenika.cudf.adapter.TestP2DescriptorUtils.createCUDFDescriptor;
 import static com.zenika.cudf.adapter.TestP2DescriptorUtils.createInstallableUnit;
+import static com.zenika.cudf.adapter.TestP2DescriptorUtils.createInstallableUnitWithExtrasProperties;
 import static com.zenika.cudf.adapter.TestP2DescriptorUtils.createP2Descriptor;
 import static com.zenika.cudf.adapter.TestP2DescriptorUtils.findBinaryByBinaryId;
 import static org.junit.Assert.assertEquals;
@@ -94,6 +95,15 @@ public class TestP2DescriptorAdapter {
                 in(findBinaryByBinaryId(BINARY_ID_1, actualDescriptor.getBinaries().getAllBinaries())));
 
         assertNull(actualDescriptor.getRequest()); // P2 packages come from resolution, so we don't need request.
+    }
+
+    @Test
+    public void testToCUDFWithExtrasProperties() {
+        Collection<InstallableUnit> p2Packages = createInstallableUnitWithExtrasProperties();
+
+        CUDFDescriptor actualDescriptor = p2DescriptorAdapter.toCUDF(p2Packages);
+
+        assertSameBinaries(getExpectedBinaries(), actualDescriptor.getBinaries());
     }
 
     private void assertDependencies(Binary[] expectedDependencies, Binary actualBinary) {
