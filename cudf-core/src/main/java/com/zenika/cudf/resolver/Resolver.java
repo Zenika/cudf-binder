@@ -1,4 +1,4 @@
-package com.zenika.cudf.adapter.resolver;
+package com.zenika.cudf.resolver;
 
 /*
  * Copyright 2012 Zenika
@@ -16,13 +16,11 @@ package com.zenika.cudf.adapter.resolver;
  * limitations under the License.
  */
 
-import com.zenika.cudf.model.Binary;
+import com.zenika.cudf.model.CUDFDescriptor;
 
 /**
  * @author Antoine Rouaze <antoine.rouaze@zenika.com>
  */
-//TODO: Maybe should be in core ?
-public interface CUDFVersionResolver {
-
-    Binary resolve(Binary binary);
+public interface Resolver {
+    CUDFDescriptor resolve(CUDFDescriptor cudfDescriptor);
 }
