@@ -25,8 +25,10 @@ import com.zenika.cudf.model.Preamble;
 import com.zenika.cudf.model.Request;
 import com.zenika.cudf.parser.model.ParsedBinary;
 import com.zenika.cudf.resolver.VersionResolver;
+import org.eclipse.equinox.p2.cudf.metadata.IProvidedCapability;
 import org.eclipse.equinox.p2.cudf.metadata.IRequiredCapability;
 import org.eclipse.equinox.p2.cudf.metadata.InstallableUnit;
+import org.eclipse.equinox.p2.cudf.metadata.ProvidedCapability;
 import org.eclipse.equinox.p2.cudf.metadata.RequiredCapability;
 import org.eclipse.equinox.p2.cudf.metadata.Version;
 import org.eclipse.equinox.p2.cudf.metadata.VersionRange;
@@ -66,18 +68,24 @@ public class P2DescriptorAdapter implements DescriptorAdapter<ProfileChangeReque
         for (int i = 0; i < p2Packages.length; i++) {
             Binary binary = itBinaries.next();
             InstallableUnit p2Package = new InstallableUnit();
+
             p2Package.setId(convertIntoId(binary.getBinaryId()));
             p2Package.setInstalled(binary.isInstalled());
-            Version version = new Version(binary.getBinaryId().getVersion());
-            p2Package.setVersion(version);
+            p2Package.setVersion(new Version(binary.getBinaryId().getVersion()));
             p2Package.setRequiredCapabilities(convertBinaryDependencies(binary.getDependencies()));
+            p2Package.setCapabilities(createP2Capacities(binary));
+            putExtrasProperties(binary, p2Package);
+
             p2Packages[i] = p2Package;
+
             if (p2Package.isInstalled()) {
                 preInstalledPackages.add(p2Package);
             }
         }
+
         ProfileChangeRequest p2Descriptor = new ProfileChangeRequest(new QueryableArray(p2Packages));
         p2Descriptor.setPreInstalledIUs(preInstalledPackages);
+
         return p2Descriptor;
     }
 
@@ -90,9 +98,40 @@ public class P2DescriptorAdapter implements DescriptorAdapter<ProfileChangeReque
         return p2Dependencies;
     }
 
-    public IRequiredCapability convertIntoP2RequiredPackage(Binary binary) {
+    private IRequiredCapability convertIntoP2RequiredPackage(Binary binary) {
         return new RequiredCapability(convertIntoId(binary.getBinaryId()),
                 new VersionRange(new Version(binary.getBinaryId().getVersion())), false);
+    }
+
+    private void putExtrasProperties(Binary binary, InstallableUnit p2Package) {
+        p2Package.addExtraProperty("name", convertIntoId(binary.getBinaryId()));
+        p2Package.addExtraProperty("package", convertIntoId(binary.getBinaryId()));
+        p2Package.addExtraProperty("number", binary.getRevision());
+        p2Package.addExtraProperty("type", binary.getType());
+        p2Package.addExtraProperty("version", String.valueOf(binary.getBinaryId().getVersion()));
+        if (!binary.getDependencies().isEmpty()) {
+            p2Package.addExtraProperty("depends", convertDependenciesIntoCUDF(binary.getDependencies()));
+        }
+    }
+
+    private String convertDependenciesIntoCUDF(Set<Binary> dependencies) {
+        StringBuilder stringBuilder = new StringBuilder(100);
+        Iterator<Binary> itBinary = dependencies.iterator();
+        while (itBinary.hasNext()) {
+            Binary dependency = itBinary.next();
+            stringBuilder.append(convertIntoId(dependency.getBinaryId()))
+                    .append(" = ").append(dependency.getBinaryId().getVersion());
+            if (itBinary.hasNext()) {
+                stringBuilder.append(", ");
+            }
+        }
+        return stringBuilder.toString();
+    }
+
+    private IProvidedCapability[] createP2Capacities(Binary binary) {
+        return new IProvidedCapability[]{
+                new ProvidedCapability(convertIntoId(binary.getBinaryId()),
+                        new VersionRange(new Version(binary.getBinaryId().getVersion())))};
     }
 
     private ProfileChangeRequest convertRequest(ProfileChangeRequest p2Descriptor, Request request) {
@@ -122,13 +161,25 @@ public class P2DescriptorAdapter implements DescriptorAdapter<ProfileChangeReque
             Binary binary = new Binary(binaryId);
             binary.setInstalled(true);
             binary.setDependencies(convertIntoBinaryDependency(p2Package.getRequiredCapabilities()));
-            binary.setType("jar"); //TODO: Not always jar (for dependencies too)
-            binary = versionResolver.resolveFromCUDF(binary);
+            if (checkExtrasProperties(p2Package, "type")) {
+                binary.setType(p2Package.getExtraPropertyValue("type"));
+            } else {
+                binary.setType("jar");
+            }
+            if (checkExtrasProperties(p2Package, "number")) {
+                binary.setRevision(p2Package.getExtraPropertyValue("number"));
+            } else {
+                binary = versionResolver.resolveFromCUDF(binary);
+            }
             binaries.add(binary);
         }
         descriptor.setBinaries(new DefaultBinaries(binaries));
         // No request
         return descriptor;
+    }
+
+    private boolean checkExtrasProperties(InstallableUnit p2Package, String propertyKey) {
+        return p2Package.getExtraPropertyValue(propertyKey) != null && !p2Package.getExtraPropertyValue(propertyKey).isEmpty();
     }
 
     private Set<Binary> convertIntoBinaryDependency(IRequiredCapability[] p2PackageDependencies) {
