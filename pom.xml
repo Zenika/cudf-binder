@@ -18,6 +18,12 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+      <groupId>com.zenika</groupId>
+      <artifactId>zenika-parent</artifactId>
+      <version>1-SNAPSHOT</version>
+    </parent>
+
     <groupId>com.zenika.dorm.cudf.binder</groupId>
     <artifactId>cudf-binder</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -31,7 +37,14 @@
     <packaging>pom</packaging>
 
     <name>CUDF Binder</name>
-    <description>Gives binding behavior to and from com.zenika.cudf</description>
+    <description>Gives binding behavior to and from CUDF</description>
+    <url>http://zenika.github.com/cudf-binder</url>
+
+    <scm>
+      <developerConnection>scm:git:git@github.com:zenika/cudf-binder</developerConnection>
+      <connection>scm:git:git@github.com:zenika/cudf-binder</connection>
+      <url>https://github.com/Zenika/cudf-binder</url>
+    </scm>
 
     <developers>
         <developer>
@@ -63,13 +76,13 @@
         <license>
             <name>Apache License, Version 2.0</name>
             <url>http://www.apache.org/licenses/</url>
-            <distribution>manuel</distribution>
+            <distribution>repo</distribution>
         </license>
     </licenses>
 
     <organization>
         <name>Zenika</name>
-        <url>http://zenika.com</url>
+        <url>http://www.zenika.com</url>
     </organization>
 
     <dependencyManagement>
