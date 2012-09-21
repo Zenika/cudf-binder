@@ -35,14 +35,12 @@
 
     <developers>
         <developer>
-            <id>Alecharp</id>
+            <id>alecharp</id>
             <name>Adrien Lecharpentier</name>
             <email>adrien.lecharpentier@zenika.com</email>
-            <url>http://blog.zenika.com/</url>
             <organization>Zenika</organization>
-            <organizationUrl>http://zenika.com</organizationUrl>
             <roles>
-                <role>admin</role>
+                <role>project-leader</role>
                 <role>developer</role>
             </roles>
             <timezone>+2</timezone>
