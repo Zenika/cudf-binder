@@ -45,8 +45,19 @@ public class DefaultSerializer extends AbstractSerializer {
     private final Writer writer;
     private final Map<String, String> illegals = new HashMap<String, String>();
 
+    private final BufferedWriter optionalWriter;
+
     public DefaultSerializer(Writer writer) {
+        this(writer, null);
+    }
+
+    public DefaultSerializer(Writer writer, Writer optionalWriter) {
         this.writer = writer;
+        if (optionalWriter != null) {
+            this.optionalWriter = new BufferedWriter(optionalWriter);
+        } else {
+            this.optionalWriter = null;
+        }
         initiateIllegalsCharatersForCUDF();
     }
 
@@ -130,6 +141,13 @@ public class DefaultSerializer extends AbstractSerializer {
             }
             writer.newLine();
             writer.flush();
+
+            if (optionalWriter != null) {
+                optionalWriter.append(encodeOrganisationWithName(binaryId.getOrganisation(), binaryId.getName()))
+                        .append(" ").append(parsedBinary.getRevision()).append(" => ")
+                        .append(Integer.toString(binaryId.getVersion()));
+                optionalWriter.newLine();
+            }
         }
     }
 

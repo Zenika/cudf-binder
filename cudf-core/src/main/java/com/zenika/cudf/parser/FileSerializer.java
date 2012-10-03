@@ -28,15 +28,22 @@ import java.io.IOException;
 public class FileSerializer extends AbstractSerializer {
 
     private File file;
+    private File debugFile;
 
     public FileSerializer(File file) {
+        this(file, null);
+    }
+
+    public FileSerializer(File file, File debugFile) {
         this.file = file;
+        this.debugFile = debugFile;
     }
 
     @Override
     protected void parseCUDF(CUDFParsedDescriptor parsedDescriptor) throws ParsingException {
         try {
-            DefaultSerializer serializer = new DefaultSerializer(new FileWriter(file));
+            DefaultSerializer serializer = new DefaultSerializer(new FileWriter(file),
+                                                                 debugFile == null ? null : new FileWriter( debugFile ));
             serializer.parseCUDF(parsedDescriptor);
         } catch (IOException e) {
             throw new ParsingException("An error was occur when trying to write the file", e);
