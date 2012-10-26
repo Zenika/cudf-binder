@@ -43,9 +43,11 @@ public class CachedBinaries
         return (Binary) cache.get(binaryId);
     }
 
-    //TODO: This method may thrown an OutOfMemory exception about heap space.
+    /**
+     * @throws OutOfMemoryError if heap space error
+     */
     @Override
-    public Set<Binary> getAllBinaries() {
+    public Set<Binary> getAllBinaries() throws OutOfMemoryError {
         Set<BinaryId> binaryIds = (Set<BinaryId>) cache.get(BINARY_ID_KEY_LIST);
         Set<Binary> binaries = new HashSet<Binary>();
         for (BinaryId binaryId : binaryIds) {
