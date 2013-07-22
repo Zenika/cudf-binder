@@ -95,6 +95,10 @@ public abstract class AbstractDeserializer {
         for (BinaryId binaryId : parsedBinary.getDependencies()) {
             validateDependency(binaryId);
             ParsedBinary parsedDependency = parsedRevisions.get(binaryId);
+            if (parsedDependency == null) {
+                parsedDependency = new ParsedBinary();
+                parsedDependency.setBinaryId(binaryId);
+            }
             Binary dependency = new Binary(parsedDependency.getBinaryId());
             dependency.setRevision(parsedDependency.getRevision());
             dependency.setInstalled(parsedDependency.isInstalled());
@@ -105,18 +109,20 @@ public abstract class AbstractDeserializer {
     }
 
     private void validateDependency(BinaryId binaryId) throws ParsingException {
-        if (binaryId.getVersion() <= 0) {
-            throw new ParsingException("The dependency binary id version of " + binaryId.getOrganisation() + ParsedBinary.SEPARATOR + binaryId.getName() + " must be either than 0");
-        }
+//        if (binaryId.getVersion()  <= 0) {
+//            throw new ParsingException("The dependency binary id version of " + binaryId.getOrganisation() + ParsedBinary.SEPARATOR + binaryId.getName() + " must be either than 0");
+//        }
     }
 
     private Request processParsedRequest(CUDFParsedDescriptor parsedDescriptor, Binaries binaries) {
         Request request = new Request();
         ParsedRequest parsedRequest = parsedDescriptor.getRequest();
-        Map<BinaryId, Binary> revisions = buildRevisionMap(binaries.getAllBinaries());
-        request.setInstall(processBinaryIdSet(revisions, parsedRequest.getInstall()));
-        request.setUpdate(processBinaryIdSet(revisions, parsedRequest.getUpdate()));
-        request.setRemove(processBinaryIdSet(revisions, parsedRequest.getRemove()));
+        if (parsedRequest != null) {
+            Map<BinaryId, Binary> revisions = buildRevisionMap(binaries.getAllBinaries());
+            request.setInstall(processBinaryIdSet(revisions, parsedRequest.getInstall()));
+            request.setUpdate(processBinaryIdSet(revisions, parsedRequest.getUpdate()));
+            request.setRemove(processBinaryIdSet(revisions, parsedRequest.getRemove()));
+        }
         return request;
     }
 
