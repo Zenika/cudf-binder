@@ -26,13 +26,26 @@ import com.zenika.cudf.parser.model.ParsedBinary;
 import com.zenika.cudf.parser.model.ParsedPreamble;
 import com.zenika.cudf.parser.model.ParsedRequest;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * @author Antoine Rouaze <antoine.rouaze@zenika.com>
  */
 public abstract class AbstractSerializer {
+
+    private final Map<String, String> illegals = new HashMap<String, String>();
+
+    protected AbstractSerializer() {
+        initiateIllegalsCharatersForCUDF();
+    }
+
+    private void initiateIllegalsCharatersForCUDF() {
+        illegals.put("_", Integer.toHexString('_'));
+        illegals.put(":", Integer.toHexString(':'));
+    }
 
     public void serialize(CUDFDescriptor descriptor) throws ParsingException {
         CUDFParsedDescriptor parsedDescriptor = new CUDFParsedDescriptor();
@@ -97,5 +110,16 @@ public abstract class AbstractSerializer {
         parsedRequest.setRemove(processBinarySet(request.getRemove()));
         parsedRequest.setUpdate(processBinarySet(request.getUpdate()));
         return parsedRequest;
+    }
+
+    protected String encodeOrganisationWithName(String organisation, String name) {
+        return encodingString(organisation + ParsedBinary.SEPARATOR + name);
+    }
+
+    protected String encodingString(String input) {
+        for (String illegal : illegals.keySet()) {
+            input = input.replaceAll(illegal, '%' + illegals.get(illegal));
+        }
+        return input;
     }
 }

@@ -43,7 +43,6 @@ public class DefaultSerializer extends AbstractSerializer {
     private static final Logger LOG = Logger.getLogger(FileSerializer.class.getName());
 
     private final Writer writer;
-    private final Map<String, String> illegals = new HashMap<String, String>();
 
     private final BufferedWriter optionalWriter;
 
@@ -52,19 +51,15 @@ public class DefaultSerializer extends AbstractSerializer {
     }
 
     public DefaultSerializer(Writer writer, Writer optionalWriter) {
+        super();
         this.writer = writer;
         if (optionalWriter != null) {
             this.optionalWriter = new BufferedWriter(optionalWriter);
         } else {
             this.optionalWriter = null;
         }
-        initiateIllegalsCharatersForCUDF();
     }
 
-    private void initiateIllegalsCharatersForCUDF() {
-        illegals.put("_", Integer.toHexString('_'));
-        illegals.put(":", Integer.toHexString(':'));
-    }
 
     @Override
     protected void parseCUDF(CUDFParsedDescriptor parsedDescriptor) throws ParsingException {
@@ -184,14 +179,4 @@ public class DefaultSerializer extends AbstractSerializer {
         }
     }
 
-    private String encodeOrganisationWithName(String organisation, String name) {
-        return encodingString(organisation + ParsedBinary.SEPARATOR + name);
-    }
-
-    private String encodingString(String input) {
-        for (String illegal : illegals.keySet()) {
-            input = input.replaceAll(illegal, '%' + illegals.get(illegal));
-        }
-        return input;
-    }
 }

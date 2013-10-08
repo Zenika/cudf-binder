@@ -32,6 +32,7 @@
         <module>cudf-core</module>
         <module>cudf-adapter-ivy</module>
         <module>cudf-adapter-archiva</module>
+        <module>cudf-pdf-serializer</module>
     </modules>
 
     <packaging>pom</packaging>
